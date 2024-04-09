@@ -7,7 +7,7 @@ public class ValidBtsDto {
 	BTS_Power_Rating_KW,BTS_Location,BTS_Voltage,Main_Unit_incase_of_TT_Split_Version,
 	Space_Occupied_in_Us_incase_of_TT_Split_Version,Location_Of_RRU,No_of_RRU_Units_incase_of_TT_Split_Version,
 	Combined_wt_of_RRU_Unit_incase_of_TT_Split_Version,AGL_of_RRU_unit_in_M,Weight_of_BTS_including_TMA_TMB_Kg,
-	Billable_Weigtht,Customer_Punched_Or_Planning="Planning",Action="Add";
+	Billable_Weigtht,Customer_Punched_Or_Planning="Planning",Action;
 	public Integer getTypeNo() {
 		return typeNo;
 	}

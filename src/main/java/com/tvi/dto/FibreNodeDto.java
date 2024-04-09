@@ -6,7 +6,7 @@ public class FibreNodeDto {
 	private String Feasibility,Customer_Punched_Or_Planning;
 		
 	private String Node_Type,Node_Location,Node_Manufacturer,Node_Model,Node_Voltage,FullRack,
-	Is_Right_Of_Way_ROW_Required_Inside_The_TOCO_Premises,Type_Of_Fiber_Laying,Type_Of_FMS,Remarks,Full_Rack;
+	Is_Right_Of_Way_ROW_Required_Inside_The_TOCO_Premises,Type_Of_Fiber_Laying,Type_Of_FMS,Remarks,Full_Rack,Action;
 	private Double Length_Mtrs,Breadth_Mtrs,Height_Mtrs,Weight_Kg,Power_Rating_in_Kw,Tx_Rack_Space_required_in_Us;
 	
 	private Double Height_mtrs,Tx_Rack_space_required_in_Us,Weight;
@@ -170,6 +170,12 @@ public class FibreNodeDto {
 	}
 	public void setType_of_FMS(String type_of_FMS) {
 		Type_of_FMS = type_of_FMS;
+	}
+	public String getAction() {
+		return Action;
+	}
+	public void setAction(String action) {
+		Action = action;
 	}
 	
 	

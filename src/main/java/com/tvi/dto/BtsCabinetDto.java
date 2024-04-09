@@ -6,7 +6,7 @@ public class BtsCabinetDto {
 	private String Feasibility,Customer_Punched_Or_Planning;
 	
 	private String NetWork_Type,BTS_Type,Band,Manufacturer,Make_of_BTS,BTS_Location,BTS_Voltage,Main_Unit_incase_of_TT_Split_Version,
-	RRU_Unit;
+	RRU_Unit,Action;
 	private Double Length_Mtrs,Width_Mtrs,Height_Mtrs,BTS_Power_Rating_KW,Space_Occupied_in_Us_incase_of_TT_Split_Version,
 	No_of_RRU_Units_incase_of_TT_Split_Version,Combined_wt_of_RRU_Unit_incase_of_TT_Split_Version,AGL_of_RRU_unit_in_M,
 	Weight_of_BTS_including_TMA_TMB_Kg,Weight_Of_BTS_including_TMA_TMB_Kg,Billable_Weigtht;
@@ -193,5 +193,11 @@ public class BtsCabinetDto {
 	}
 	public void setWeight_Of_BTS_including_TMA_TMB_Kg(Double weight_Of_BTS_including_TMA_TMB_Kg) {
 		Weight_Of_BTS_including_TMA_TMB_Kg = weight_Of_BTS_including_TMA_TMB_Kg;
+	}
+	public String getAction() {
+		return Action;
+	}
+	public void setAction(String action) {
+		this.Action = action;
 	}
 }

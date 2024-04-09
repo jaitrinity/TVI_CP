@@ -5,7 +5,7 @@ public class ValidBscRncDto {
 	private String Feasibility;
 	
 	private String NetWork_Type,BSC_RNC_Type,BSC_RNC_Manufacturer,BSC_RNC_Make,Length_Mtrs,Breadth_Mtrs,Height_AGL,
-	BSC_RNC_Power_Rating,Customer_Punched_Or_Planning="Planning",Action="Add";
+	BSC_RNC_Power_Rating,Customer_Punched_Or_Planning="Planning",Action;
 	public Integer getTypeNo() {
 		return typeNo;
 	}

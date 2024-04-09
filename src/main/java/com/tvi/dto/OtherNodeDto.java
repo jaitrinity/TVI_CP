@@ -5,7 +5,7 @@ public class OtherNodeDto {
 	private Integer typeNo;
 	private String Feasibility,Customer_Punched_Or_Planning;
 		
-	private String Node_Type,Node_Location,Node_Manufacturer,Node_Model,Node_Voltage,FullRack,Remarks;
+	private String Node_Type,Node_Location,Node_Manufacturer,Node_Model,Node_Voltage,FullRack,Remarks,Action;
 	private Double Length_Mtrs,Breadth_Mtrs,Height_Mtrs,Weight_Kg,Power_Rating_in_Kw,Tx_Rack_Space_Required_In_Us;
 	
 	public String getFeasibility() {
@@ -103,6 +103,12 @@ public class OtherNodeDto {
 	}
 	public void setTypeNo(Integer typeNo) {
 		this.typeNo = typeNo;
+	}
+	public String getAction() {
+		return Action;
+	}
+	public void setAction(String action) {
+		Action = action;
 	}
 	
 	

@@ -3,7 +3,7 @@ package com.tvi.dto;
 public class BscRncCabinetsDto {
 	// At time SP Received
 	private Integer typeNo;
-	private String Feasibility,Customer_Punched_Or_Planning;
+	private String Feasibility,Customer_Punched_Or_Planning,Action;
 	
 	private String NetWork_Type,BSC_RNC_Type,BSC_RNC_Manufacturer,BSC_RNC_Make;
 	private Double Length_Mtrs,Breadth_Mtrs,Height_AGL,BSC_RNC_Power_Rating;
@@ -73,6 +73,12 @@ public class BscRncCabinetsDto {
 	}
 	public void setTypeNo(Integer typeNo) {
 		this.typeNo = typeNo;
+	}
+	public String getAction() {
+		return Action;
+	}
+	public void setAction(String action) {
+		this.Action = action;
 	}
 	
 	

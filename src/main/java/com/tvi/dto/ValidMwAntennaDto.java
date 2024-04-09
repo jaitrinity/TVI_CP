@@ -5,7 +5,7 @@ public class ValidMwAntennaDto {
 	private String Feasibility;
 	
 	private String MWAntenna_i_WAN,Size_of_MW,Height_in_Mtrs,Azimuth_Degree,
-	Customer_Punched_Or_Planning="Planning",Sector_Details="Sector 1",Action="Add",Source="";
+	Customer_Punched_Or_Planning="Planning",Sector_Details="Sector 1",Action,Source="";
 	public Integer getTypeNo() {
 		return typeNo;
 	}

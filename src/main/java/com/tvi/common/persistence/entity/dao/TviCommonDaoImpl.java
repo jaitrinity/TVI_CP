@@ -1583,7 +1583,7 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 				+ "`SACFA_Number`, `Is_Diesel_Generator_DG_required`, `STATUS`, `SR_DATE`, `TAB_NAME`)";
 		sql += " VALUES ";
 		sql += " ('"+srNumber+"', '"+srRequestJson.getRef_Number_TVIPL()+"', '"+srRequestJson.getSiteId()+"', '"+srRequestJson.getOperator()+"', '"+srRequestJson.getUniqueRequestId()+"', '"+srRequestJson.getGlobal().getRemarks()+"', "
-				+ "'"+siteDetail.getCustomer()+"', '"+siteDetail.getCustomer_Site_Id()+"', '"+siteDetail.getCustomer_Site_Name()+"', "
+				+ "'"+siteDetail.getCustomer()+"', '"+siteDetail.getCustomer_Site_Id().trim()+"', '"+siteDetail.getCustomer_Site_Name()+"', "
 				+ "'"+circleName+"', '"+circleCode+"', '"+siteDetail.getState()+"', '"+siteDetail.getCell_Type()+"', '"+siteDetail.getSite_Type()+"', "
 				+ "'"+siteDetail.getCity()+"', "+siteDetail.getSearch_Ring_Radious_Mtrs()+", '"+siteDetail.getInfill_NewTown()+"', '"+siteDetail.getShowCase_Non_Showcase()+"', "
 				+ "'"+siteDetail.get_3_11_Towns()+"', '"+siteDetail.getTown()+"', '"+siteDetail.getRequest_for_Network_Type()+"', "
@@ -1819,7 +1819,7 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 				+ "`Cluster`, `MSA_Type`, `Name_of_District_SSA`, `Product_Name`)";
 		sql += " VALUES ";
 		sql += " ('"+srNumber+"', '"+srRequestJson.getRef_Number_TVIPL()+"', '"+srRequestJson.getSiteId()+"', '"+srRequestJson.getOperator()+"', '"+srRequestJson.getUniqueRequestId()+"', '"+srRequestJson.getGlobal().getRemarks()+"', "
-				+ "'"+siteDetail.getTOCO_Site_Id()+"', '"+siteDetail.getCustomer()+"', '"+siteDetail.getCustomer_Site_Id()+"', '"+siteDetail.getCustomer_Site_Name()+"', "
+				+ "'"+siteDetail.getTOCO_Site_Id()+"', '"+siteDetail.getCustomer()+"', '"+siteDetail.getCustomer_Site_Id().trim()+"', '"+siteDetail.getCustomer_Site_Name()+"', "
 				+ "'"+circleName+"', '"+circleCode+"', '', '', '"+siteDetail.getShare_Type()+"', "
 				+ "'"+siteDetail.getCity()+"', '"+siteDetail.getInfill_NewTown()+"', '"+siteDetail.getShowCase_Non_Showcase()+"', "
 				+ "'"+siteDetail.get_3_11_Towns()+"', '"+siteDetail.getTown()+"', '"+siteDetail.getTargetDate_DD_MM_YYYY()+"', '"+siteDetail.getRequest_for_Network_Type()+"', "
@@ -2074,7 +2074,11 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 			sql += " VALUES ";
 			int typeNo = 1;
 			for(com.tvi.upgrade.dto.BtsCabinetDto btsCabi : bts.getBTS_Cabinet()){
-				totalRatedPowerInKW += btsCabi.getBTS_Power_Rating_KW();
+//				totalRatedPowerInKW += btsCabi.getBTS_Power_Rating_KW();
+				String action = btsCabi.getAction();
+				if(action.equalsIgnoreCase("Add")){
+					totalRatedPowerInKW += btsCabi.getBTS_Power_Rating_KW();
+				}
 				String dataSql = " ('"+srNumber+"', "+typeNo+", '"+btsCabi.getCustomer_Punched_Or_Planning()+"', "
 						+ ""+bts.getConfig_type_1()+", "+bts.getConfig_type_2()+", "+bts.getConfig_type_3()+", "+bts.getConfig_Carriers()+", "
 						+ "'"+btsCabi.getAction()+"', '"+btsCabi.getSource()+"', '"+btsCabi.getNetWork_Type()+"', '"+btsCabi.getBTS_Type()+"', '"+btsCabi.getBand()+"', '"+btsCabi.getManufacturer()+"', "
@@ -2142,7 +2146,11 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 			sql += " VALUES ";
 			typeNo = 1;
 			for(com.tvi.upgrade.dto.BscRncCabinetsDto bsc : srRequestJson.getBSC_RNC_Cabinets()){
-				totalRatedPowerInKW += bsc.getBSC_RNC_Power_Rating();
+//				totalRatedPowerInKW += bsc.getBSC_RNC_Power_Rating();
+				String action = bsc.getAction();
+				if(action.equalsIgnoreCase("Add")){
+					totalRatedPowerInKW += bsc.getBSC_RNC_Power_Rating();
+				}
 				String dataSql = "('"+srNumber+"', "+typeNo+", '"+bsc.getCustomer_Punched_Or_Planning()+"', '"+bsc.getAction()+"', '"+bsc.getSource()+"', "
 						+ "'"+bsc.getNetWork_Type()+"', '"+bsc.getBSC_RNC_Type()+"', '"+bsc.getBSC_RNC_Manufacturer()+"', "
 						+ "'"+bsc.getBSC_RNC_Make()+"', "+bsc.getLength_Mtrs()+", "+bsc.getBreadth_Mtrs()+", "+bsc.getHeight_AGL()+", "
@@ -2162,7 +2170,11 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 			sql += " VALUES ";
 			typeNo = 1;
 			for(com.tvi.upgrade.dto.OtherNodeDto other : srRequestJson.getOther_Node()){
-				totalRatedPowerInKW += other.getPower_Rating_in_Kw();
+//				totalRatedPowerInKW += other.getPower_Rating_in_Kw();
+				String action = other.getAction();
+				if(action.equalsIgnoreCase("Add")){
+					totalRatedPowerInKW += other.getPower_Rating_in_Kw();
+				}
 				String dataSql = "('"+srNumber+"', "+typeNo+", '"+other.getCustomer_Punched_Or_Planning()+"', '"+other.getAction()+"', '"+other.getNode_Type()+"', '"+other.getNode_Location()+"', '"+other.getNode_Manufacturer()+"', "
 						+ "'"+other.getNode_Model()+"', "+other.getLength_Mtrs()+", "+other.getBreadth_Mtrs()+", "+other.getHeight_Mtrs()+", "
 						+ ""+other.getWeight_Kg()+", '"+other.getNode_Voltage()+"', "+other.getPower_Rating_in_Kw()+", '"+other.getFullRack()+"', "
@@ -2215,7 +2227,11 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 			sql += " VALUES ";
 			typeNo = 1;
 			for(com.tvi.upgrade.dto.FibreNodeDto fiNo : srRequestJson.getFibre_Node()){
-				totalRatedPowerInKW += fiNo.getPower_Rating_in_Kw();
+//				totalRatedPowerInKW += fiNo.getPower_Rating_in_Kw();
+				String action = fiNo.getAction();
+				if(action.equalsIgnoreCase("Add")){
+					totalRatedPowerInKW += fiNo.getPower_Rating_in_Kw();
+				}
 				String dataSql = "('"+srNumber+"', "+typeNo+", '"+fiNo.getCustomer_Punched_Or_Planning()+"', '"+fiNo.getAction()+"', '"+fiNo.getSource()+"', "
 						+ "'"+fiNo.getNode_Type()+"', '"+fiNo.getNode_Location()+"', '"+fiNo.getNode_Manufacturer()+"', "
 						+ "'"+fiNo.getNode_Model()+"', "+fiNo.getLength_Mtrs()+", "+fiNo.getBreadth_Mtrs()+", "+fiNo.getHeight_Mtrs()+", "

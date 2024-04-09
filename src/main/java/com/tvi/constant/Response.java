@@ -11,7 +11,8 @@ public class Response<T> {
 	private String responseCode;
 	private String responseDesc;
 	private String pagination;
-	private String srNumber;
+	private String srNumber="";
+	private String srDate="";
 	private String uniqueRequestId;
 
 	public Response() {
@@ -27,13 +28,14 @@ public class Response<T> {
 	}
 
 	public Response(List<T> wrappedList, Map<String, String> errorsMap, String responseCode, String responseDesc, 
-			String pagination, String srNumber, String uniqueRequestId) {
+			String pagination, String srNumber, String srDate, String uniqueRequestId) {
 		this.wrappedList = wrappedList;
 		this.errorsMap = errorsMap;
 		this.responseCode = responseCode;
 		this.responseDesc = responseDesc;
 		this.pagination = pagination;
 		this.srNumber = srNumber;
+		this.srDate = srDate;
 		this.uniqueRequestId = uniqueRequestId;
 	}
 
@@ -83,6 +85,14 @@ public class Response<T> {
 
 	public void setSrNumber(String srNumber) {
 		this.srNumber = srNumber;
+	}
+
+	public String getSrDate() {
+		return srDate;
+	}
+
+	public void setSrDate(String srDate) {
+		this.srDate = srDate;
 	}
 
 	public String getUniqueRequestId() {

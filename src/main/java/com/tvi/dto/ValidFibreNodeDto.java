@@ -6,7 +6,7 @@ public class ValidFibreNodeDto {
 	
 	private String Node_Type,Node_Location,Node_Manufacturer,Node_Model,Length_Mtrs,Breadth_Mtrs,Height_Mtrs,Weight_Kg,
 	Node_Voltage,Power_Rating_in_Kw,FullRack,Tx_Rack_Space_required_in_Us,Is_Right_Of_Way_ROW_Required_Inside_The_TOCO_Premises,
-	Type_Of_Fiber_Laying,Type_Of_FMS,Remarks,Full_Rack,Customer_Punched_Or_Planning="Planning",Action="Add",Source="";
+	Type_Of_Fiber_Laying,Type_Of_FMS,Remarks,Full_Rack,Customer_Punched_Or_Planning="Planning",Action,Source="";
 	public Integer getTypeNo() {
 		return typeNo;
 	}

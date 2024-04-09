@@ -3,7 +3,7 @@ package com.tvi.dto;
 public class MwAntennaDto {
 	// At time SP Received
 	private Integer typeNo;
-	private String Feasibility,Customer_Punched_Or_Planning,Sector_Details;
+	private String Feasibility,Customer_Punched_Or_Planning,Sector_Details,Action;
 	
 	private String MWAntenna_i_WAN;
 	private Double Size_of_MW,Height_in_Mtrs,Azimuth_Degree;
@@ -56,6 +56,12 @@ public class MwAntennaDto {
 	}
 	public void setTypeNo(Integer typeNo) {
 		this.typeNo = typeNo;
+	}
+	public String getAction() {
+		return Action;
+	}
+	public void setAction(String action) {
+		this.Action = action;
 	}
 	
 	

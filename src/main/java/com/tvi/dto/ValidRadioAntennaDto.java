@@ -5,7 +5,7 @@ public class ValidRadioAntennaDto {
 	private String Feasibility;
 	
 	private String RadioAntenna_i_WAN,Height_AGL_m,Azimuth_Degree,Length_m,Width_m,Depth_m,No_of_Ports,RadioAntenna_Type,
-	BandFrequencyMHz_FrequencyCombination,Customer_Punched_Or_Planning="Planning",Sector_Details="Sector 1",Action="Add";
+	BandFrequencyMHz_FrequencyCombination,Customer_Punched_Or_Planning="Planning",Sector_Details="Sector 1",Action;
 	public Integer getTypeNo() {
 		return typeNo;
 	}

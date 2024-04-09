@@ -6,7 +6,7 @@ public class ValidOtherNodeDto {
 	
 	private String Node_Type,Node_Location,Node_Manufacturer,Node_Model,Length_Mtrs,Breadth_Mtrs,Height_Mtrs,Weight_Kg,
 	Node_Voltage,Power_Rating_in_Kw,FullRack,Tx_Rack_Space_Required_In_Us,Remarks,
-	Customer_Punched_Or_Planning="Planning",Action="Add";
+	Customer_Punched_Or_Planning="Planning",Action;
 	public Integer getTypeNo() {
 		return typeNo;
 	}

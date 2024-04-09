@@ -1,5 +1,6 @@
 package com.tvi.dao;
 
+import java.io.File;
 import java.sql.Clob;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 import javax.sql.rowset.serial.SerialClob;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,6 +87,10 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	@Autowired
 	TviCommonDao tviCommonDao;
 	
+	ClassLoader classLoader = getClass().getClassLoader();
+	File file = new File(classLoader.getResource("log4j.xml").getFile());
+	final static Logger logger = Logger.getLogger(IntegrationDaoImpl.class);
+	
 	@Transactional
 	@Override
 	public void saveResponseInTable(Clob requestJson, Clob responseJson, String methodName) {
@@ -136,13 +142,13 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			SrRequestJsonDto srRequestJson = srDto;
 			// checking customer site id is available in Airtel SR table...
 			SiteDetailDto siteDetail = srRequestJson.getSite_Detail();
-			String customerSiteId = siteDetail.getCustomer_Site_Id();
+			String customerSiteId = siteDetail.getCustomer_Site_Id().trim();
 			if(customerSiteId == null || customerSiteId.equalsIgnoreCase("")){
 				response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
 				response.setResponseDesc("Customer_Site_Id can't be blank");
 				return response;
 			}
-			String sql = "SELECT `SR_Number`, `UniqueRequestId` FROM `Airtel_SR` where `Customer_Site_Id` = '"+customerSiteId+"'"
+			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Customer_Site_Id` = '"+customerSiteId+"'"
 					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108')";
 			List<Object[]> alreadySrDataList = tviCommonDao.getAllTableData(sql);
 			boolean isExist = alreadySrDataList.size() != 0 ? true : false;
@@ -152,6 +158,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				response.setResponseDesc("SR already exist on Customer_Site_Id("+customerSiteId+")");
 				response.setSrNumber(emptyString(staObj[0]));
 				response.setUniqueRequestId(emptyString(staObj[1]));
+				response.setSrDate(emptyString(staObj[2]));
 				return response;
 			}
 			Date d = new Date();
@@ -202,13 +209,13 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			SharingSrRequestJsonDto srRequestJson = srDto;
 			// checking customer site id is available in Airtel SR table...
 			com.tvi.sharing.dto.SiteDetailDto siteDetail = srRequestJson.getSite_Detail();
-			String customerSiteId = siteDetail.getCustomer_Site_Id();
+			String customerSiteId = siteDetail.getCustomer_Site_Id().trim();
 			if(customerSiteId == null || customerSiteId.equalsIgnoreCase("")){
 				response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
 				response.setResponseDesc("Customer_Site_Id can't be blank");
 				return response;
 			}
-			String sql = "SELECT `SR_Number`, `UniqueRequestId` FROM `Airtel_SR` where `Customer_Site_Id` = '"+customerSiteId+"'"
+			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Customer_Site_Id` = '"+customerSiteId+"'"
 					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108')";
 			List<Object[]> alreadySrDataList = tviCommonDao.getAllTableData(sql);
 			boolean isExist = alreadySrDataList.size() != 0 ? true : false;
@@ -218,6 +225,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				response.setResponseDesc("SR already exist on Customer_Site_Id("+customerSiteId+")");
 				response.setSrNumber(emptyString(staObj[0]));
 				response.setUniqueRequestId(emptyString(staObj[1]));
+				response.setSrDate(emptyString(staObj[2]));
 				return response;
 			}
 			// checking TOCO_SITE_ID is available in Site_Master... 
@@ -770,7 +778,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 
 	private void prepareAirSrBasicData(AirtelCommonResponse airComm, AirtelCommonRequest jsonData) {
 		try {
-			String sql = "SELECT `Date_of_Proposal`, round(`Power_Rating`,3) as `Power_Rating`, `Site_Electrification_Distance`, `Tentative_EB_Availibility`, "
+			String sql = "SELECT date_format(`Date_of_Proposal`,'%d-%m-%Y') as `Date_of_Proposal`, round(`Power_Rating`,3) as `Power_Rating`, `Site_Electrification_Distance`, `Tentative_EB_Availibility`, "
 					+ "`Additional_Charge`, `Address1`, `Head_Load_Charge`, `Electrification_Cost`, "
 					+ "`Electrification_Line_Distance`, `Electricity_Connection_HT_LT`, `Infra_Details`, "
 					+ "`Site_Classification`, `Expected_Rent_to_Landlord`, `Non_Refundable_Deposit`, "
@@ -981,7 +989,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			String sql = "SELECT `Type_No`, `Node_Type`, `Node_Location`, `Feasibility`, `Node_Manufacturer`, `Node_Model`, "
 					+ "`Length_Mtrs`, `Breadth_Mtrs`, `Height_Mtrs`, `Weight_Kg`, `Node_Voltage`, `Power_Rating_in_Kw`, "
 					+ "`FullRack`, `Tx_Rack_Space_required_in_Us`, `Is_Right_Of_Way_ROW_Required_Inside_The_Indus_Premises`, "
-					+ "`Type_Of_Fiber_Laying`, `Type_Of_FMS`, `Remarks`, `Full_Rack` FROM `Airtel_Fibre_Node` "
+					+ "`Type_Of_Fiber_Laying`, `Type_Of_FMS`, `Remarks`, `Full_Rack`, `Action` FROM `Airtel_Fibre_Node` "
 					+ "where `SR_Number` = '"+jsonData.getSrNumber()+"'";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<FibreNodeDto> classList = new ArrayList<FibreNodeDto>();
@@ -1007,6 +1015,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				classObj.setType_Of_FMS(dataObj[16] == null ? "" : emptyString(dataObj[16]));
 				classObj.setRemarks(dataObj[17] == null ? "" : emptyString(dataObj[17]));
 				classObj.setFull_Rack(dataObj[18] == null ? "" : emptyString(dataObj[18]));
+				classObj.setAction(dataObj[19] == null ? "" : emptyString(dataObj[19]));
 				classList.add(classObj);
 			}
 			airComm.setFibre_Node(classList);
@@ -1048,7 +1057,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 		try {
 			String sql = "SELECT `Type_No`, `Node_Type`, `Node_Location`, `Node_Manufacturer`, `Feasibility`, `Node_Model`, "
 					+ "`Length_Mtrs`, `Breadth_Mtrs`, `Height_Mtrs`, `Weight_Kg`, `Node_Voltage`, `Power_Rating_in_Kw`, "
-					+ "`FullRack`, `Tx_Rack_Space_Required_In_Us`, `Remarks` FROM `Airtel_Other_Node` "
+					+ "`FullRack`, `Tx_Rack_Space_Required_In_Us`, `Remarks`, `Action` FROM `Airtel_Other_Node` "
 					+ "where `SR_Number` = '"+jsonData.getSrNumber()+"'";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<OtherNodeDto> classList = new ArrayList<OtherNodeDto>();
@@ -1071,6 +1080,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				classObj.setFullRack(dataObj[12] == null ? "" : emptyString(dataObj[12]));
 				classObj.setTx_Rack_Space_Required_In_Us(dataObj[13] == null ? 0 : Double.parseDouble(emptyString(dataObj[13])));
 				classObj.setRemarks(emptyString(dataObj[14] == null ? "" : emptyString(dataObj[14])));
+				classObj.setAction(emptyString(dataObj[15] == null ? "" : emptyString(dataObj[15])));
 				String remark = dataObj[14] == null ? "" : emptyString(dataObj[14]);
 				if(remark.equalsIgnoreCase("MW_Tx")){
 					mwIduList.add(classObj);
@@ -1091,7 +1101,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private void prepareAirBscRncCabinetData(AirtelCommonResponse airComm, AirtelCommonRequest jsonData) {
 		try {
 			String sql = "SELECT `Type_No`, `NetWork_Type`, `BSC_RNC_Type`, `Feasibility`, `BSC_RNC_Manufacturer`, "
-					+ "`BSC_RNC_Make`, `Length_Mtrs`, `Breadth_Mtrs`, `Height_AGL`, `BSC_RNC_Power_Rating` "
+					+ "`BSC_RNC_Make`, `Length_Mtrs`, `Breadth_Mtrs`, `Height_AGL`, `BSC_RNC_Power_Rating`, `Action` "
 					+ "FROM `Airtel_BSC_RNC_Cabinets` where `SR_Number` = '"+jsonData.getSrNumber()+"'";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<BscRncCabinetsDto> classList = new ArrayList<BscRncCabinetsDto>();
@@ -1108,6 +1118,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				classObj.setBreadth_Mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyString(dataObj[7])));
 				classObj.setHeight_AGL(dataObj[8] == null ? 0 : Double.parseDouble(emptyString(dataObj[8])));
 				classObj.setBSC_RNC_Power_Rating(dataObj[9] == null ? 0 : Double.parseDouble(emptyString(dataObj[9])));
+				classObj.setAction(dataObj[10] == null ? "" : emptyString(dataObj[10]));
 				classList.add(classObj);
 			}
 			airComm.setBSC_RNC_Cabinets(classList);
@@ -1120,7 +1131,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private void prepareAirMwData(AirtelCommonResponse airComm, AirtelCommonRequest jsonData) {
 		try {
 			String sql = "SELECT `Type_No`, `MWAntenna_i_WAN`, `Size_of_MW`, `Feasibility`, `Height_in_Mtrs`, "
-					+ "`Azimuth_Degree` FROM `Airtel_MW` where `SR_Number` = '"+jsonData.getSrNumber()+"'";
+					+ "`Azimuth_Degree`, `Action` FROM `Airtel_MW` where `SR_Number` = '"+jsonData.getSrNumber()+"'";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<MwAntennaDto> classList = new ArrayList<MwAntennaDto>();
 			MwAntennaDto classObj = null;
@@ -1132,6 +1143,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				classObj.setFeasibility(dataObj[3] == null ? "" : emptyString(dataObj[3]));
 				classObj.setHeight_in_Mtrs(dataObj[4] == null ? 0 : Double.parseDouble(emplyNumeric(dataObj[4])));
 				classObj.setAzimuth_Degree(dataObj[5] == null ? 0 : Double.parseDouble(emplyNumeric(dataObj[5])));
+				classObj.setAction(dataObj[6] == null ? "" : emptyString(dataObj[6]));
 				classList.add(classObj);
 			}
 			airComm.setMW_Antenna(classList);
@@ -1144,7 +1156,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 		try {
 			String sql = "SELECT `Type_No`, `RadioAntenna_i_WAN`, `Height_AGL_m`, `Feasibility`, `Azimuth_Degree`, "
 					+ "`Length_m`, `Width_m`, `Depth_m`, `No_of_Ports`, `RadioAntenna_Type`, "
-					+ "`BandFrequencyMHz_FrequencyCombination` FROM `Airtel_Radio_Antenna` "
+					+ "`BandFrequencyMHz_FrequencyCombination`, `Action` FROM `Airtel_Radio_Antenna` "
 					+ "where `SR_Number` = '"+jsonData.getSrNumber()+"'";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<RadioAntennaDto> classList = new ArrayList<RadioAntennaDto>();
@@ -1166,6 +1178,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 					bandFreq = bandFreq.replace(",0.0", "");
 				}
 				classObj.setBandFrequencyMHz(bandFreq);
+				classObj.setAction(dataObj[11] == null ? "" : emptyString(dataObj[11]));
 				classList.add(classObj);
 			}
 			airComm.setRadio_Antenna(classList);
@@ -1182,7 +1195,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 					+ "`BTS_Location`, `BTS_Voltage`, `Main_Unit_incase_of_TT_Split_Version`, "
 					+ "`Space_Occupied_in_Us_incase_of_TT_Split_Version`, `RRU_Unit`, "
 					+ "`No_of_RRU_Units_incase_of_TT_Split_Version`, `Combined_wt_of_RRU_Unit_incase_of_TT_Split_Version`, "
-					+ "`AGL_of_RRU_unit_in_M`, `Weight_of_BTS_including_TMA_TMB_Kg`, `Billable_Weigtht` "
+					+ "`AGL_of_RRU_unit_in_M`, `Weight_of_BTS_including_TMA_TMB_Kg`, `Billable_Weigtht`, `Action` "
 					+ "FROM `Airtel_BTS` where `SR_Number` = '"+jsonData.getSrNumber()+"'";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<BtsCabinetDto> classList = new ArrayList<BtsCabinetDto>();
@@ -1211,6 +1224,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				classObj.setAGL_of_RRU_unit_in_M(dataObj[18] == null ? 0 : Double.parseDouble(emptyString(dataObj[18])));
 				classObj.setWeight_of_BTS_including_TMA_TMB_Kg(dataObj[19] == null ? 0 : Double.parseDouble(emptyString(dataObj[19])));
 				classObj.setBillable_Weigtht(dataObj[20] == null ? 0 : Double.parseDouble(emptyString(dataObj[20])));
+				classObj.setAction(dataObj[21] == null ? "" : emptyString(dataObj[21]));
 				String btsType = dataObj[2] == null ? "" : emptyString(dataObj[2]);
 				if(btsType.equalsIgnoreCase("Towertop")){
 					rruClassList.add(classObj);
@@ -1829,7 +1843,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private void insertTmaTmbData(ChangeAirtelSrStatusRequest jsonData) {
 		try {
 			String srNumber = jsonData.getSrNumber();
-			String delSql = "DELETE FROM `Airtel_TMA_TMB` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			String delSql = "UPDATE `Airtel_TMA_TMB` set `InsertType`='SP_deleted'  where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			logger.info("TMA_TMB updated: "+delSql);
 			tviCommonDao.updateBulkdataValue(delSql);
 			
 			List<ValidTmaTmbDto> validList = jsonData.getValidTmaTmbList();
@@ -1889,7 +1904,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private void insertBtsData(ChangeAirtelSrStatusRequest jsonData) {
 		try {
 			String srNumber = jsonData.getSrNumber();
-			String delSql = "DELETE FROM `Airtel_BTS` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			String delSql = "UPDATE `Airtel_BTS` set `InsertType` = 'SP_deleted' where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			logger.info("BTS updated: "+delSql);
 			tviCommonDao.updateBulkdataValue(delSql);
 			
 			List<ValidBtsDto> validList = jsonData.getValidBtsList();
@@ -1926,7 +1942,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private void insertRadioAntennaData(ChangeAirtelSrStatusRequest jsonData) {
 		try {
 			String srNumber = jsonData.getSrNumber();
-			String delSql = "DELETE FROM `Airtel_Radio_Antenna` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			String delSql = "UPDATE `Airtel_Radio_Antenna` set `InsertType` = 'SP_deleted' where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			logger.info("Radio_Antenna updated: "+delSql);
 			tviCommonDao.updateBulkdataValue(delSql);
 			
 			List<ValidRadioAntennaDto> validList = jsonData.getValidRadioAntennaList();
@@ -1955,7 +1972,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private void insertMwAntennaData(ChangeAirtelSrStatusRequest jsonData) {
 		try {
 			String srNumber = jsonData.getSrNumber();
-			String delSql = "DELETE FROM `Airtel_MW` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			String delSql = "UPDATE `Airtel_MW` set `InsertType` = 'SP_deleted' where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			logger.info("MW updated: "+delSql);
 			tviCommonDao.updateBulkdataValue(delSql);
 			
 			String sql = "INSERT INTO `Airtel_MW`(`SR_Number`, `Feasibility`, "
@@ -1984,7 +2002,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private void insertBscRncData(ChangeAirtelSrStatusRequest jsonData) {
 		try {
 			String srNumber = jsonData.getSrNumber();
-			String delSql = "DELETE FROM `Airtel_BSC_RNC_Cabinets` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			String delSql = "UPDATE `Airtel_BSC_RNC_Cabinets` set `InsertType` = 'SP_deleted' where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			logger.info("BSC_RNC_Cabinets updated: "+delSql);
 			tviCommonDao.updateBulkdataValue(delSql);
 			
 			String sql = "INSERT INTO `Airtel_BSC_RNC_Cabinets`(`SR_Number`, `Feasibility`, "
@@ -2012,7 +2031,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private void insertOtherNodeData(ChangeAirtelSrStatusRequest jsonData) {
 		try {
 			String srNumber = jsonData.getSrNumber();
-			String delSql = "DELETE FROM `Airtel_Other_Node` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			String delSql = "UPDATE `Airtel_Other_Node` set `InsertType` = 'SP_deleted' where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			logger.info("Other_Node updated: "+delSql);
 			tviCommonDao.updateBulkdataValue(delSql);
 			
 			String sql = "INSERT INTO `Airtel_Other_Node`(`SR_Number`, `Feasibility`, "
@@ -2044,7 +2064,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private void insertMcbData(ChangeAirtelSrStatusRequest jsonData) {
 		try {
 			String srNumber = jsonData.getSrNumber();
-			String delSql = "DELETE FROM `Airtel_MCB` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			String delSql = "UPDATE `Airtel_MCB` set `InsertType` = 'SP_deleted' where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			logger.info("MCB updated: "+delSql);
 			tviCommonDao.updateBulkdataValue(delSql);
 			
 			ValidMcbDto mcb = jsonData.getValidMcbList().get(0);
@@ -2069,7 +2090,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private void insertFibreNodeData(ChangeAirtelSrStatusRequest jsonData) {
 		try {
 			String srNumber = jsonData.getSrNumber();
-			String delSql = "DELETE FROM `Airtel_Fibre_Node` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			String delSql = "UPDATE `Airtel_Fibre_Node` set `InsertType` = 'SP_deleted' where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			logger.info("Fibre_Node updated: "+delSql);
 			tviCommonDao.updateBulkdataValue(delSql);
 			
 			String sql = "INSERT INTO `Airtel_Fibre_Node`(`SR_Number`, `Feasibility`, "
@@ -2103,13 +2125,14 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private SpReceivedResponse srSoReject2(SrSoReject jsonData, String currentStatus) {
 		SpReceivedResponse response = new SpReceivedResponse();
 		try {
-			//String srNumber = jsonData.getSR_Number();
 			Gson gsonObj = new Gson();
 			String json = gsonObj.toJson(jsonData);
-			//System.out.println("JSON : "+json);
+			System.out.println("srSoReject2 : JSON : "+json);
+			logger.info("srSoReject2 : JSON : "+json);
 			String apiURL = "https://ideploy.airtel.com/iDeployAPI/api/sr/updatesrdetailstatus";
 			String apiResponse = RestAPI.updateSrDetailStatus(apiURL, json);
-			//System.out.println("apiResponse : "+apiResponse);
+			System.out.println("srSoReject2 : apiResponse : "+apiResponse);
+			logger.info("srSoReject2 : apiResponse : "+apiResponse);
 			AirtelApiResponse airtelApi = gsonObj.fromJson(apiResponse, AirtelApiResponse.class);
 			//System.out.println("Status : "+airtelApi.isStatus());
 			//System.out.println("Messsage : "+airtelApi.getMessage());
@@ -2118,9 +2141,9 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			
 			boolean status = airtelApi.isStatus();
 			if(!status){
-				// Comment on 05-Oct-23
-				/*String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"' where `SR_Number` = '"+srNumber+"'";
-				tviCommonDao.updateBulkdataValue(upSql);*/
+				String srNumber = jsonData.getSR_Number();
+				String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"' where `SR_Number` = '"+srNumber+"'";
+				tviCommonDao.updateBulkdataValue(upSql);
 			}
 			
 			Clob requestJson = new SerialClob(CommonFunction.printResponseJson(json).toCharArray());
@@ -2138,10 +2161,12 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			SpReceivedDto jsonData = getSrDetailsForSendToAirtel(srNumber);
 			Gson gsonObj = new Gson();
 			String json = gsonObj.toJson(jsonData);
-			//System.out.println("JSON : "+json);
+			System.out.println("spReceived : JSON : "+json);
+			logger.info("spReceived : JSON : "+json);
 			String apiURL = "https://ideploy.airtel.com/iDeployAPI/api/common/sp_insert";
 			String apiResponse = RestAPI.spInsert(apiURL, json);
-			//System.out.println("apiResponse : "+apiResponse);
+			System.out.println("spReceived : apiResponse : "+apiResponse);
+			logger.info("spReceived : apiResponse : "+apiResponse);
 			AirtelApiResponse airtelApi = gsonObj.fromJson(apiResponse, AirtelApiResponse.class);
 			//System.out.println("Status : "+airtelApi.isStatus());
 			//System.out.println("Messsage : "+airtelApi.getMessage());
@@ -2150,9 +2175,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			
 			boolean status = airtelApi.isStatus();
 			if(!status){
-				// Comment on 05-Oct-23
-				/*String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"' where `SR_Number` = '"+srNumber+"'";
-				tviCommonDao.updateBulkdataValue(upSql);*/
+				String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"' where `SR_Number` = '"+srNumber+"'";
+				tviCommonDao.updateBulkdataValue(upSql);
 				
 				/*String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"', `Additional_Charge` = null, "
 						+ "`Infra_Details` = null, `Site_Classification` = null, `Expected_Rent_to_Landlord` = null, "
@@ -2184,7 +2208,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			Rel_IfyesmentiontheBhartiUnitName="",Rel_NameOftheEmployee="",Rel_EmployeeId="",
 			Rel_LandlordRelationshipwithEmployee="",Rel_MobileNumberOfrelativeWithAirtel="",Declaration="";
 			String sql = "SELECT `SP_Number`, `Customer_Site_Id`, `Customer_Site_Name`, `Site_Type`, `Project_Name`, "
-					+ "`City`, `Other_Equipment`, `Is_Diesel_Generator_DG_required`, `TOCO_Site_Id`, `Date_of_Proposal`, "
+					+ "`City`, `Other_Equipment`, `Is_Diesel_Generator_DG_required`, `TOCO_Site_Id`, date_format(`Date_of_Proposal`,'%d-%m-%Y') as `Date_of_Proposal`, "
 					+ "`Power_Rating`, `Site_Electrification_Distance`, `Tentative_EB_Availibility`, `Additional_Charge`, "
 					+ "`Address1`, `Head_Load_Charge`, `Electrification_Cost`, `Electrification_Line_Distance`, "
 					+ "`Electricity_Connection_HT_LT`, `Infra_Details`, `Site_Classification`, "
@@ -2541,10 +2565,12 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			SpReceivedSharingDto jsonData = getSharingSrDetailsForSendToAirtel(srNumber);
 			Gson gsonObj = new Gson();
 			String json = gsonObj.toJson(jsonData);
-			//System.out.println("JSON : "+json);
+			System.out.println("spReceivedSharing : JSON : "+json);
+			logger.info("spReceivedSharing : JSON : "+json);
 			String apiURL = "https://ideploy.airtel.com/iDeployAPI/api/common/sp_insert";
 			String apiResponse = RestAPI.spInsert(apiURL, json);
-			//System.out.println("apiResponse : "+apiResponse);
+			System.out.println("spReceivedSharing : apiResponse : "+apiResponse);
+			logger.info("spReceivedSharing : apiResponse : "+apiResponse);
 			AirtelApiResponse airtelApi = gsonObj.fromJson(apiResponse, AirtelApiResponse.class);
 			//System.out.println("Status : "+airtelApi.isStatus());
 			//System.out.println("Messsage : "+airtelApi.getMessage());
@@ -2553,10 +2579,10 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			
 			boolean status = airtelApi.isStatus();
 			if(!status){
-				// Comment on 05-Oct-23
-				/*String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"' where `SR_Number` = '"+srNumber+"'";
-				tviCommonDao.updateBulkdataValue(upSql);*/
+				String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"' where `SR_Number` = '"+srNumber+"'";
+				tviCommonDao.updateBulkdataValue(upSql);
 				
+				// Comment on 05-Oct-23
 				/*String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"', `Additional_Charge` = null, "
 						+ "`Infra_Details` = null, `Site_Classification` = null, `Expected_Rent_to_Landlord` = null, "
 						+ "`Non_Refundable_Deposit` = null, `Estimated_Deployment_Time__in_days_` = null, "
@@ -2588,7 +2614,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			Rel_LandlordRelationshipwithEmployee="",Rel_MobileNumberOfrelativeWithAirtel="",Declaration="";
 			String sql = "SELECT `SP_Number`, `Customer_Site_Id`, `Customer_Site_Name`, `Site_Type`, `Project_Name`, "
 					+ "`City`, `Other_Equipment`, `Is_Diesel_Generator_DG_required`, `TOCO_Site_Id`, "
-					+ "`Date_of_Proposal`, `Power_Rating`, `Site_Electrification_Distance`, `Tentative_EB_Availibility`, "
+					+ "date_format(`Date_of_Proposal`,'%d-%m-%Y') as `Date_of_Proposal`, `Power_Rating`, `Site_Electrification_Distance`, `Tentative_EB_Availibility`, "
 					+ "`Additional_Charge`, `Head_Load_Charge`, `Electrification_Cost`, `Electrification_Line_Distance`, "
 					+ "`Electricity_Connection_HT_LT`, `Infra_Details`, `Site_Classification`, `Expected_Rent_to_Landlord`, "
 					+ "`Non_Refundable_Deposit`, `Estimated_Deployment_Time__in_days_`, `Additional_Capex`, `Standard_Rates`, "
@@ -2922,10 +2948,12 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			SpReceivedUpgradeDto jsonData = getUpgradeSrDetailsForSendToAirtel(srNumber);
 			Gson gsonObj = new Gson();
 			String json = gsonObj.toJson(jsonData);
-			//System.out.println("JSON "+json);
+			System.out.println("spReceivedUpgrade : JSON "+json);
+			logger.info("spReceivedUpgrade : JSON : "+json);
 			String apiURL = "https://ideploy.airtel.com/iDeployAPI/api/common/sp_insert";
 			String apiResponse = RestAPI.spInsert(apiURL, json);
-			//System.out.println("apiResponse : "+apiResponse);
+			System.out.println("spReceivedUpgrade : apiResponse : "+apiResponse);
+			logger.info("spReceivedUpgrade : apiResponse : "+apiResponse);
 			AirtelApiResponse airtelApi = gsonObj.fromJson(apiResponse, AirtelApiResponse.class);
 			//System.out.println("Status : "+airtelApi.isStatus());
 			//System.out.println("Messsage : "+airtelApi.getMessage());
@@ -2934,9 +2962,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			
 			boolean status = airtelApi.isStatus();
 			if(!status){
-				// Comment on 05-Oct-23
-				/*String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"' where `SR_Number` = '"+srNumber+"'";
-				tviCommonDao.updateBulkdataValue(upSql);*/
+				String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"' where `SR_Number` = '"+srNumber+"'";
+				tviCommonDao.updateBulkdataValue(upSql);
 			}
 			
 			Clob requestJson = new SerialClob(CommonFunction.printResponseJson(json).toCharArray());
@@ -2957,7 +2984,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				Rel_IfyesmentiontheBhartiUnitName="",Rel_NameOftheEmployee="",Rel_EmployeeId="",
 				Rel_LandlordRelationshipwithEmployee="",Rel_MobileNumberOfrelativeWithAirtel="",Declaration="";
 			String sql = "SELECT `SP_Number`, `Customer_Site_Id`, `Customer_Site_Name`, `Site_Type`, `Project_Name`, "
-					+ "`City`, `Other_Equipment`, `Is_Diesel_Generator_DG_required`, `TOCO_Site_Id`, `Date_of_Proposal`, "
+					+ "`City`, `Other_Equipment`, `Is_Diesel_Generator_DG_required`, `TOCO_Site_Id`, date_format(`Date_of_Proposal`,'%d-%m-%Y') as `Date_of_Proposal`, "
 					+ "`Power_Rating`, `Site_Electrification_Distance`, `Tentative_EB_Availibility`, `Additional_Charge`, "
 					+ "`Head_Load_Charge`, `Electrification_Cost`, `Electrification_Line_Distance`, "
 					+ "`Electricity_Connection_HT_LT`, `Infra_Details`, `Site_Classification`, `Expected_Rent_to_Landlord`, "
@@ -3340,10 +3367,12 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			RfaiReceivedDto jsonData = getSrDetailsForRfaiReceived(srNumber);
 			Gson gsonObj = new Gson();
 			String json = gsonObj.toJson(jsonData);
-			//System.out.println("JSON "+json);
+			System.out.println("rfaiReceived : JSON "+json);
+			logger.info("rfaiReceived : JSON : "+json);
 			String apiURL = "https://ideploy.airtel.com/iDeployAPI/api/common/rfai_insert";
 			String apiResponse = RestAPI.rfaiInsert(apiURL, json);
-			//System.out.println(apiResponse);
+			System.out.println("rfaiReceived : apiResponse : "+apiResponse);
+			logger.info("rfaiReceived : apiResponse : "+apiResponse);
 			AirtelApiResponse airtelApi = gsonObj.fromJson(apiResponse, AirtelApiResponse.class);
 			//System.out.println("Status : "+airtelApi.isStatus());
 			//System.out.println("Messsage : "+airtelApi.getMessage());
@@ -3352,9 +3381,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			
 			boolean status = airtelApi.isStatus();
 			if(!status){
-				// Comment on 05-Oct-23
-				/*String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"' where `SR_Number` = '"+srNumber+"'";
-				tviCommonDao.updateBulkdataValue(upSql);*/
+				String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"' where `SR_Number` = '"+srNumber+"'";
+				tviCommonDao.updateBulkdataValue(upSql);
 			}
 			
 			Clob requestJson = new SerialClob(CommonFunction.printResponseJson(json).toCharArray());
@@ -3454,10 +3482,12 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				
 				Gson gsonObj = new Gson();
 				String json = gsonObj.toJson(jsonData);
-				//System.out.println("JSON : "+json);
+				System.out.println("spLapsed : JSON : "+json);
+				logger.info("spLapsed : JSON : "+json);
 				String apiURL = "https://ideploy.airtel.com/iDeployAPI/api/sr/updatesrdetailstatus";
 				String apiResponse = RestAPI.updateSrDetailStatus(apiURL, json);
-				//System.out.println("apiResponse : "+apiResponse);
+				System.out.println("spLapsed : apiResponse : "+apiResponse);
+				logger.info("spLapsed : apiResponse : "+apiResponse);
 				AirtelApiResponse airtelApi = gsonObj.fromJson(apiResponse, AirtelApiResponse.class);
 				//System.out.println("Status : "+airtelApi.isStatus());
 				//System.out.println("Messsage : "+airtelApi.getMessage());

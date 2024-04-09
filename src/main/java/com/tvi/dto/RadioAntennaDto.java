@@ -5,7 +5,7 @@ public class RadioAntennaDto {
 	private Integer typeNo;
 	private String Feasibility,Customer_Punched_Or_Planning,Sector_Details;
 	
-	private String RadioAntenna_i_WAN,No_of_Ports,RadioAntenna_Type,BandFrequencyMHz;
+	private String RadioAntenna_i_WAN,No_of_Ports,RadioAntenna_Type,BandFrequencyMHz,Action;
 	private Double Height_AGL_m,Azimuth_Degree,Length_m,Width_m,Depth_m;
 	private BandFrequencyMHzDto BandFrequencyMHz_FrequencyCombination;
 	
@@ -101,6 +101,12 @@ public class RadioAntennaDto {
 	}
 	public void setBandFrequencyMHz(String bandFrequencyMHz) {
 		BandFrequencyMHz = bandFrequencyMHz;
+	}
+	public String getAction() {
+		return Action;
+	}
+	public void setAction(String action) {
+		this.Action = action;
 	}
 	
 }
