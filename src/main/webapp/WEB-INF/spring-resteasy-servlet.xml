@@ -49,27 +49,13 @@
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/TVICustomerPortal?useSSL=false" />
-		<property name="username" value="db" />
-		<property name="password" value="P@ssw0rd" />
+		<property name="url" value="jdbc:mysql://localhost:3306/db_name?useSSL=false" />
+		<property name="username" value="db_user" />
+		<property name="password" value="db_pass" />
 	</bean>
-	
-	<!-- <bean id="dataSource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://in3.co.in:3306/TVICustomerPortal?useSSL=false" />
-		<property name="username" value="db" />
-		<property name="password" value="P@ssw0rd" />
-	</bean> -->
     
     <!-- in3 anyhost datasource -->
-    <!-- <bean id="dataSource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://in3.co.in:3306/TVICustomerPortal" />
-		<property name="username" value="trinity" />
-		<property name="password" value="tr!n!ty#456" />
-	</bean> -->
+   
 	
 	 <!-- ************************ EntityManagerFactory ****************************** -->
 
