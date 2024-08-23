@@ -2,6 +2,7 @@ package com.tvi.request;
 
 import java.util.List;
 
+import com.tvi.dto.ActionButtonDTO;
 import com.tvi.dto.NbsAuditDTO;
 
 public class SaveNBSRequest {
@@ -61,6 +62,8 @@ public class SaveNBSRequest {
 	private List<PoleRequest> noOfPoleList;
 	private Integer noOfHPSCAntenna;
 	private List<HPSCAntennaRequest> noOfHPSCAntennaList;
+	private Integer noOfAirFiber;
+	private List<AirFiberRequest> airFiberList;
 	private Double floorLength,totalRatedPower;
 	private Double floorWidth;
 	private Double floorHeight;
@@ -109,6 +112,7 @@ public class SaveNBSRequest {
 	private List<MicrowaveRequest> viewMicrowaveAddList;
 	private List<PoleRequest> viewPoleList;
 	private List<HPSCAntennaRequest> viewHPSCAntennaList;
+	private List<ActionButtonDTO> actionButtonList;
 	
 	public String getOpcoId() {
 		return opcoId;
@@ -1623,6 +1627,24 @@ public class SaveNBSRequest {
 	}
 	public void setSiteId(String siteId) {
 		this.siteId = siteId;
+	}
+	public List<ActionButtonDTO> getActionButtonList() {
+		return actionButtonList;
+	}
+	public void setActionButtonList(List<ActionButtonDTO> actionButtonList) {
+		this.actionButtonList = actionButtonList;
+	}
+	public Integer getNoOfAirFiber() {
+		return noOfAirFiber;
+	}
+	public void setNoOfAirFiber(Integer noOfAirFiber) {
+		this.noOfAirFiber = noOfAirFiber;
+	}
+	public List<AirFiberRequest> getAirFiberList() {
+		return airFiberList;
+	}
+	public void setAirFiberList(List<AirFiberRequest> airFiberList) {
+		this.airFiberList = airFiberList;
 	}
 	
 	

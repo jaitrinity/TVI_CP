@@ -251,8 +251,18 @@
 		
 	</dependencies>
   
-  
+  <!-- For Airtel API is TVI_CP -->
   <build>
-    <finalName>TVI_CPv</finalName>
+  	<finalName>TVI_CP</finalName>
   </build>
+  
+  <!-- For Portal API -->
+  <!-- <build>
+    <finalName>TVI_CP_WS</finalName>
+  </build> -->
+  
+  <!-- For Test -->
+  <!-- <build>
+    <finalName>TVI_CPv</finalName>
+  </build> -->
 </project>

@@ -186,6 +186,33 @@ public class NbsMasterDetEntity implements Serializable {
 	@Column(name="Type_of_HPSC_Antenna")
 	private String typeofHpscAntenna;
 	
+	@Column(name="AF_Make")
+	private String make;
+	
+	@Column(name="AF_Model")
+	private String model;
+	
+	@Column(name="AF_Dimensions")
+	private String dimensions;
+	
+	@Column(name="AF_Weight")
+	private Double weight;
+	
+	@Column(name="AF_Band")
+	private String band;
+	
+	@Column(name="AF_Technology")
+	private String technology;
+	
+	@Column(name="AF_Load")
+	private Double load;
+	
+	@Column(name="AF_Mcb")
+	private String mcb;
+	
+	@Column(name="AF_EquipPlace")
+	private String equipPlacement;
+	
 	@Column(name="STATUS")
 	private String status;
 	
@@ -671,7 +698,77 @@ public class NbsMasterDetEntity implements Serializable {
 
 	public void setMicrowaveModel(String microwaveModel) {
 		this.microwaveModel = microwaveModel;
+	}
+
+	public String getMake() {
+		return make;
+	}
+
+	public void setMake(String make) {
+		this.make = make;
+	}
+
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
+	}
+
+	public String getDimensions() {
+		return dimensions;
+	}
+
+	public void setDimensions(String dimensions) {
+		this.dimensions = dimensions;
+	}
+
+	public Double getWeight() {
+		return weight;
+	}
+
+	public void setWeight(Double weight) {
+		this.weight = weight;
+	}
+
+	public String getBand() {
+		return band;
+	}
+
+	public void setBand(String band) {
+		this.band = band;
+	}
+
+	public String getTechnology() {
+		return technology;
+	}
+
+	public void setTechnology(String technology) {
+		this.technology = technology;
+	}
+
+	public Double getLoad() {
+		return load;
+	}
+
+	public void setLoad(Double load) {
+		this.load = load;
+	}
+
+	public String getMcb() {
+		return mcb;
+	}
+
+	public void setMcb(String mcb) {
+		this.mcb = mcb;
+	}
+
+	public String getEquipPlacement() {
+		return equipPlacement;
+	}
+
+	public void setEquipPlacement(String equipPlacement) {
+		this.equipPlacement = equipPlacement;
 	}	
-	
-	
 }

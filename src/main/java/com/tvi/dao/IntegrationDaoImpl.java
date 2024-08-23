@@ -58,6 +58,7 @@ import com.tvi.dto.ValidBtsDto;
 import com.tvi.dto.ValidFibreNodeDto;
 import com.tvi.dto.ValidMcbDto;
 import com.tvi.dto.ValidMwAntennaDto;
+import com.tvi.dto.ValidOtherEquipmentDto;
 import com.tvi.dto.ValidOtherNodeDto;
 import com.tvi.dto.ValidRadioAntennaDto;
 import com.tvi.dto.ValidTmaTmbDto;
@@ -148,8 +149,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				response.setResponseDesc("Customer_Site_Id can't be blank");
 				return response;
 			}
-			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Customer_Site_Id` = '"+customerSiteId+"'"
-					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108')";
+			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Customer_Site_Id` like '%"+customerSiteId+"%'"
+					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108','NB110')";
 			List<Object[]> alreadySrDataList = tviCommonDao.getAllTableData(sql);
 			boolean isExist = alreadySrDataList.size() != 0 ? true : false;
 			if(isExist){
@@ -215,8 +216,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				response.setResponseDesc("Customer_Site_Id can't be blank");
 				return response;
 			}
-			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Customer_Site_Id` = '"+customerSiteId+"'"
-					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108')";
+			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Customer_Site_Id` like '%"+customerSiteId+"%'"
+					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108','NB110')";
 			List<Object[]> alreadySrDataList = tviCommonDao.getAllTableData(sql);
 			boolean isExist = alreadySrDataList.size() != 0 ? true : false;
 			if(isExist){
@@ -647,6 +648,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			prepareAirAttachmentData(airComm,jsonData);
 			prepareAirAuditData(airComm,jsonData);
 			prepareAirTmaTmbData(airComm,jsonData);
+			prepareAirOtherEquipmentData(airComm,jsonData);
 			list.add(airComm);
 			
 			if(list.size() !=0){
@@ -667,13 +669,44 @@ public class IntegrationDaoImpl implements IntegrationDao{
 		return response;
 	}
 	
+	private void prepareAirOtherEquipmentData(AirtelCommonResponse airComm, AirtelCommonRequest jsonData) {
+		try {
+			String sql = "SELECT `Type_No`, `Feasibility`, `Action`, `Source_Request_RefNo`, "
+					+ "`Other_Equipment_Category`, `Other_Equipment_Type`, `Equipment_to_be_relocated`, "
+					+ "`Target_Indus_Site_Id`, `Target_Request_RefNo`, `CustomerPunchedOrPlanning`, "
+					+ "`Deletion_OR_Relocation` FROM `Airtel_Other_Equipment` "
+					+ "WHERE `SR_Number` = '"+jsonData.getSrNumber()+"' and `InsertType` in ('SR','SP')";
+			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
+			List<OtherEquipmentDto> classList = new ArrayList<OtherEquipmentDto>();
+			OtherEquipmentDto classObj = null;
+			for(Object [] dataObj : dataList){
+				classObj = new OtherEquipmentDto();
+				classObj.setTypeNo(Integer.parseInt(emplyNumeric(dataObj[0])));
+				classObj.setFeasibility(dataObj[1] == null ? "" : emptyString(dataObj[1]));
+				classObj.setAction(dataObj[2] == null ? "" : emptyString(dataObj[2]));
+				classObj.setSource_Request_RefNo(dataObj[3] == null ? "" : emptyString(dataObj[3]));
+				classObj.setOther_Equipment_Category(dataObj[4] == null ? "" : emptyString(dataObj[4]));
+				classObj.setOther_Equipment_Type(dataObj[5] == null ? "" : emptyString(dataObj[5]));
+				classObj.setEquipment_to_be_relocated(dataObj[6] == null ? "" : emptyString(dataObj[6]));
+				classObj.setTarget_Indus_Site_Id(dataObj[7] == null ? "" : emptyString(dataObj[7]));
+				classObj.setTarget_Request_RefNo(dataObj[8] == null ? "" : emptyString(dataObj[8]));
+				classObj.setCustomerPunchedOrPlanning(dataObj[9] == null ? "" : emptyString(dataObj[9]));
+				classObj.setDeletion_OR_Relocation(dataObj[10] == null ? "" : emptyString(dataObj[10]));
+				classList.add(classObj);
+			}
+			airComm.setOther_Equipment(classList);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void prepareAirTmaTmbData(AirtelCommonResponse airComm, AirtelCommonRequest jsonData) {
 		try {
 			String sql = "SELECT `Type_No`, `Feasibility`, `Action`, `Source`, `No_of_TMA_TMB`, "
 					+ "`Weight_of_each_TMA_TMB`, `Combined_wt_of_TMA_TMB_Kgs`, "
 					+ "`Height_at_which_needs_to_be_mounted_Mtrs`, `Customer_Punched_Or_Planning`, "
 					+ "`Source_Request_Ref_No`, `Delete_Request_Ref_No` FROM `Airtel_TMA_TMB` "
-					+ "WHERE `SR_Number` = '"+jsonData.getSrNumber()+"'";
+					+ "WHERE `SR_Number` = '"+jsonData.getSrNumber()+"' and `InsertType` in ('SR','SP')";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<TmaTmbDto> classList = new ArrayList<TmaTmbDto>();
 			TmaTmbDto classObj = null;
@@ -842,7 +875,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				airComm.setWeight_of_each_TMA_TMB(dataObj[96] == null ? "" : emptyString(dataObj[96]));
 				airComm.setCombined_wt_of_TMA_TMB_Kgs(dataObj[97] == null ? "" : emptyString(dataObj[97]));
 				airComm.setHeight_at_which_needs_to_be_mounted_Mtrs(dataObj[98] == null ? "" : emptyString(dataObj[98]));
-				airComm.setOther_Equipment(dataObj[99] == null ? "" : emptyString(dataObj[99]));
+				//airComm.setOther_Equipment(dataObj[99] == null ? "" : emptyString(dataObj[99]));
 				airComm.setFiber_Required(dataObj[100] == null ? "" : emptyString(dataObj[100]));
 				airComm.setNo_of_Fiber_Pairs(dataObj[101] == null ? "" : emptyString(dataObj[101]));
 				airComm.setIs_Fiber_Node_Provisioning_Required(dataObj[102] == null ? "" : emptyString(dataObj[102]));
@@ -990,7 +1023,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 					+ "`Length_Mtrs`, `Breadth_Mtrs`, `Height_Mtrs`, `Weight_Kg`, `Node_Voltage`, `Power_Rating_in_Kw`, "
 					+ "`FullRack`, `Tx_Rack_Space_required_in_Us`, `Is_Right_Of_Way_ROW_Required_Inside_The_Indus_Premises`, "
 					+ "`Type_Of_Fiber_Laying`, `Type_Of_FMS`, `Remarks`, `Full_Rack`, `Action` FROM `Airtel_Fibre_Node` "
-					+ "where `SR_Number` = '"+jsonData.getSrNumber()+"'";
+					+ "where `SR_Number` = '"+jsonData.getSrNumber()+"' and `InsertType` in ('SR','SP')";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<FibreNodeDto> classList = new ArrayList<FibreNodeDto>();
 			FibreNodeDto classObj = null;
@@ -1028,7 +1061,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private void prepareAirMcbData(AirtelCommonResponse airComm, AirtelCommonRequest jsonData) {
 		try {
 			String sql = "SELECT `Total_No_of_MCB_Required`, `_06A`, `_10A`, `_16A`, `_24A`, `_32A`, `_40A`, `_63A`, "
-					+ "`_80A`, `Feasibility` FROM `Airtel_MCB` where `SR_Number` = '"+jsonData.getSrNumber()+"'";
+					+ "`_80A`, `Feasibility` FROM `Airtel_MCB` "
+					+ "where `SR_Number` = '"+jsonData.getSrNumber()+"' and `InsertType` in ('SR','SP')";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<McbDto> MCB = new ArrayList<McbDto>();
 			McbDto classObj = null;
@@ -1058,7 +1092,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			String sql = "SELECT `Type_No`, `Node_Type`, `Node_Location`, `Node_Manufacturer`, `Feasibility`, `Node_Model`, "
 					+ "`Length_Mtrs`, `Breadth_Mtrs`, `Height_Mtrs`, `Weight_Kg`, `Node_Voltage`, `Power_Rating_in_Kw`, "
 					+ "`FullRack`, `Tx_Rack_Space_Required_In_Us`, `Remarks`, `Action` FROM `Airtel_Other_Node` "
-					+ "where `SR_Number` = '"+jsonData.getSrNumber()+"'";
+					+ "where `SR_Number` = '"+jsonData.getSrNumber()+"' and `InsertType` in ('SR','SP')";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<OtherNodeDto> classList = new ArrayList<OtherNodeDto>();
 			List<OtherNodeDto> mwIduList = new ArrayList<OtherNodeDto>();
@@ -1102,7 +1136,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 		try {
 			String sql = "SELECT `Type_No`, `NetWork_Type`, `BSC_RNC_Type`, `Feasibility`, `BSC_RNC_Manufacturer`, "
 					+ "`BSC_RNC_Make`, `Length_Mtrs`, `Breadth_Mtrs`, `Height_AGL`, `BSC_RNC_Power_Rating`, `Action` "
-					+ "FROM `Airtel_BSC_RNC_Cabinets` where `SR_Number` = '"+jsonData.getSrNumber()+"'";
+					+ "FROM `Airtel_BSC_RNC_Cabinets` "
+					+ "where `SR_Number` = '"+jsonData.getSrNumber()+"' and `InsertType` in ('SR','SP')";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<BscRncCabinetsDto> classList = new ArrayList<BscRncCabinetsDto>();
 			BscRncCabinetsDto classObj = null;
@@ -1131,7 +1166,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private void prepareAirMwData(AirtelCommonResponse airComm, AirtelCommonRequest jsonData) {
 		try {
 			String sql = "SELECT `Type_No`, `MWAntenna_i_WAN`, `Size_of_MW`, `Feasibility`, `Height_in_Mtrs`, "
-					+ "`Azimuth_Degree`, `Action` FROM `Airtel_MW` where `SR_Number` = '"+jsonData.getSrNumber()+"'";
+					+ "`Azimuth_Degree`, `Action` FROM `Airtel_MW` "
+					+ "where `SR_Number` = '"+jsonData.getSrNumber()+"' and `InsertType` in ('SR','SP')";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<MwAntennaDto> classList = new ArrayList<MwAntennaDto>();
 			MwAntennaDto classObj = null;
@@ -1157,7 +1193,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			String sql = "SELECT `Type_No`, `RadioAntenna_i_WAN`, `Height_AGL_m`, `Feasibility`, `Azimuth_Degree`, "
 					+ "`Length_m`, `Width_m`, `Depth_m`, `No_of_Ports`, `RadioAntenna_Type`, "
 					+ "`BandFrequencyMHz_FrequencyCombination`, `Action` FROM `Airtel_Radio_Antenna` "
-					+ "where `SR_Number` = '"+jsonData.getSrNumber()+"'";
+					+ "where `SR_Number` = '"+jsonData.getSrNumber()+"' and `InsertType` in ('SR','SP')";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<RadioAntennaDto> classList = new ArrayList<RadioAntennaDto>();
 			RadioAntennaDto classObj = null;
@@ -1196,7 +1232,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 					+ "`Space_Occupied_in_Us_incase_of_TT_Split_Version`, `RRU_Unit`, "
 					+ "`No_of_RRU_Units_incase_of_TT_Split_Version`, `Combined_wt_of_RRU_Unit_incase_of_TT_Split_Version`, "
 					+ "`AGL_of_RRU_unit_in_M`, `Weight_of_BTS_including_TMA_TMB_Kg`, `Billable_Weigtht`, `Action` "
-					+ "FROM `Airtel_BTS` where `SR_Number` = '"+jsonData.getSrNumber()+"'";
+					+ "FROM `Airtel_BTS` where `SR_Number` = '"+jsonData.getSrNumber()+"' and `InsertType` in ('SR','SP')";
 			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
 			List<BtsCabinetDto> classList = new ArrayList<BtsCabinetDto>();
 			List<BtsCabinetDto> rruClassList = new ArrayList<BtsCabinetDto>();
@@ -1295,6 +1331,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 					insertOtherNodeData(jsonData);
 					insertMcbData(jsonData);
 					insertFibreNodeData(jsonData);
+					insertOtherEquimentData(jsonData);
 				}
 				else if(afterStatus.equalsIgnoreCase("NB09")){
 					sql += ", `Additional_Charge` = '"+jsonData.getAdditional_Charge()+"', "
@@ -1424,6 +1461,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 					insertOtherNodeData(jsonData);
 					insertMcbData(jsonData);
 					insertFibreNodeData(jsonData);
+					insertOtherEquimentData(jsonData);
 				}
 				else if(afterStatus.equalsIgnoreCase("NB04")){
 					sql += ", `Additional_Charge` = '"+jsonData.getAdditional_Charge()+"', "
@@ -1576,6 +1614,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 					insertMcbData(jsonData);
 					insertFibreNodeData(jsonData);
 					insertTmaTmbData(jsonData);
+					insertOtherEquimentData(jsonData);
 				}
 				else if(afterStatus.equalsIgnoreCase("NB03")){
 					String soNumber = srNumber.replace("SR", "SO");
@@ -1627,7 +1666,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 						if(!apiRes.isStatus())
 							airtelApiResponse = "sp_insert :: "+apiRes.getMessage();
 					}
-					else if(afterStatus.equalsIgnoreCase("NB05")){
+					else if(afterStatus.equalsIgnoreCase("NB06")){
 						RfaiReceivedResponse apiRes = rfaiReceived(srNumber, currentStatus);
 						if(!apiRes.isStatus())
 							airtelApiResponse = "rfai_insert :: "+apiRes.getMessage();
@@ -1729,6 +1768,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 					insertOtherNodeData(jsonData);
 					insertMcbData(jsonData);
 					insertFibreNodeData(jsonData);
+					insertOtherEquimentData(jsonData);
 				}
 				else if(afterStatus.equalsIgnoreCase("NB10")){
 					String soNumber = srNumber.replace("SR", "SO");
@@ -1840,6 +1880,35 @@ public class IntegrationDaoImpl implements IntegrationDao{
 		return response;
 	}
 	
+	private void insertOtherEquimentData(ChangeAirtelSrStatusRequest jsonData) {
+		try {
+			String srNumber = jsonData.getSrNumber();
+			String delSql = "UPDATE `Airtel_Other_Equipment` set `InsertType`='SP_deleted'  where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP'";
+			logger.info("Other_Equipment updated: "+delSql);
+			tviCommonDao.updateBulkdataValue(delSql);
+			
+			List<ValidOtherEquipmentDto> validList = jsonData.getValidOtherEquipmentList();
+			String sql = "INSERT INTO `Airtel_Other_Equipment`(`SR_Number`, `Type_No`, `Feasibility`, "
+					+ "`CustomerPunchedOrPlanning`, `Other_Equipment_Category`, "
+					+ "`Other_Equipment_Type`, `Deletion_OR_Relocation`, "
+					+ "`Target_Indus_Site_Id`,`Target_Request_RefNo`, `InsertType`)";
+			sql += " VALUES ";
+			for(ValidOtherEquipmentDto obj : validList){
+				String dataSql = "('"+jsonData.getSrNumber()+"', "+obj.getTypeNo()+", '"+obj.getFeasibility()+"', "
+				+ "'"+obj.getCustomerPunchedOrPlanning()+"', '"+obj.getOther_Equipment_Category()+"', "
+				+ "'"+obj.getOther_Equipment_Type()+"', '"+obj.getDeletion_OR_Relocation()+"', "
+				+ "'"+obj.getTarget_Indus_Site_Id()+"', '"+obj.getTarget_Request_RefNo()+"',  'SP')";
+				int exe = tviCommonDao.updateBulkdataValue(sql + dataSql);
+				if(exe != 0){
+					//System.out.println("TMA TMB updated");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 	private void insertTmaTmbData(ChangeAirtelSrStatusRequest jsonData) {
 		try {
 			String srNumber = jsonData.getSrNumber();
@@ -2202,7 +2271,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private SpReceivedDto getSrDetailsForSendToAirtel(String srNumber) {
 		SpReceivedDto dto = new SpReceivedDto();
 		try {
-			String otherEquipment = "",isDieselGeneratorDGrequired = "",circle="",networkType="",spLati="",spLong="",
+			String isDieselGeneratorDGrequired = "",circle="",networkType="",spLati="",spLong="",
 			Ass_AreyouWorkingInAnyBhartiGroup="",Ass_IfyesmentiontheBhartiUnitName="",
 			Ass_NameOftheEmployee="",Ass_EmployeeId="",Rel_AnyRelativesareWorkingWithBhartiGroup="",
 			Rel_IfyesmentiontheBhartiUnitName="",Rel_NameOftheEmployee="",Rel_EmployeeId="",
@@ -2234,7 +2303,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				SPDetails_NN.setSiteType(emptyString(dataObj[3]));
 				SPDetails_NN.setProject_Name(emptyString(dataObj[4]));
 				SPDetails_NN.setCity(emptyString(dataObj[5]));	
-				otherEquipment = emptyString(dataObj[6]);
+				//emptyString(dataObj[6]);
 				isDieselGeneratorDGrequired = emptyString(dataObj[7]);
 				SPDetails_NN.setTOCO_Site_Id(emptyString(dataObj[8]));
 				SPDetails_NN.setDate_of_Proposal(dataObj[9] == null ? "" : emptyString(dataObj[9]));
@@ -2514,8 +2583,30 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			Global.setNetwork_Type(networkType);
 			dto.setGlobal(Global);
 			
-			OtherEquipmentDto Other_Equipment = new OtherEquipmentDto();
-			Other_Equipment.setOther_Equipment(otherEquipment);
+//			OtherEquipmentDto Other_Equipment = new OtherEquipmentDto();
+//			Other_Equipment.setOther_Equipment(otherEquipment);
+//			dto.setOther_Equipment(Other_Equipment);
+			
+			List<OtherEquipmentDto> Other_Equipment = new ArrayList<>();
+			sql = "SELECT `Feasibility`, `Source_Request_RefNo`, `Other_Equipment_Category`, "
+					+ "`Other_Equipment_Type`, `Equipment_to_be_relocated`, `Target_Indus_Site_Id`, "
+					+ "`Target_Request_RefNo`, `CustomerPunchedOrPlanning`, `Deletion_OR_Relocation` "
+					+ "FROM `Airtel_Other_Equipment` WHERE `SR_Number`='"+srNumber+"' and `InsertType`='SP'";
+			dataList = tviCommonDao.getAllTableData(sql);
+			OtherEquipmentDto otEqObj = null;
+			for(Object [] dataObj : dataList){
+				otEqObj = new OtherEquipmentDto();
+				otEqObj.setFeasibility(emptyString(dataObj[0]));
+				otEqObj.setSource_Request_RefNo(emptyString(dataObj[1]));
+				otEqObj.setOther_Equipment_Category(emptyString(dataObj[2]));
+				otEqObj.setOther_Equipment_Type(emptyString(dataObj[3]));
+				otEqObj.setEquipment_to_be_relocated(emptyString(dataObj[4]));
+				otEqObj.setTarget_Indus_Site_Id(emptyString(dataObj[5]));
+				otEqObj.setTarget_Request_RefNo(emptyString(dataObj[6]));
+				otEqObj.setCustomerPunchedOrPlanning(emptyString(dataObj[7]));
+				otEqObj.setDeletion_OR_Relocation(emptyString(dataObj[8]));
+				Other_Equipment.add(otEqObj);
+			}
 			dto.setOther_Equipment(Other_Equipment);
 			
 			StrageticDto Strategic_Conversion = new StrageticDto();
@@ -2607,7 +2698,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private SpReceivedSharingDto getSharingSrDetailsForSendToAirtel(String srNumber) {
 		SpReceivedSharingDto dto = new SpReceivedSharingDto();
 		try {
-			String otherEquipment = "",isDieselGeneratorDGrequired = "",circle="",networkType="",
+			String isDieselGeneratorDGrequired = "",circle="",networkType="",
 			Ass_AreyouWorkingInAnyBhartiGroup="",Ass_IfyesmentiontheBhartiUnitName="",
 			Ass_NameOftheEmployee="",Ass_EmployeeId="",Rel_AnyRelativesareWorkingWithBhartiGroup="",
 			Rel_IfyesmentiontheBhartiUnitName="",Rel_NameOftheEmployee="",Rel_EmployeeId="",
@@ -2638,7 +2729,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				SPDetails_NN.setSiteType(emptyString(dataObj[3]));
 				SPDetails_NN.setProject_Name(emptyString(dataObj[4]));
 				SPDetails_NN.setCity(emptyString(dataObj[5]));	
-				otherEquipment = emptyString(dataObj[6]);
+//				emptyString(dataObj[6]);
 				isDieselGeneratorDGrequired = emptyString(dataObj[7]);
 				SPDetails_NN.setTOCO_Site_Id(emptyString(dataObj[8]));
 				SPDetails_NN.setDate_of_Proposal(dataObj[9] == null ? "" : emptyString(dataObj[9]));
@@ -2901,8 +2992,30 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			Global.setNetwork_Type(networkType);;
 			dto.setGlobal(Global);
 			
-			com.tvi.sharing.dto.OtherEquipmentDto Other_Equipment = new com.tvi.sharing.dto.OtherEquipmentDto();
+			/*com.tvi.sharing.dto.OtherEquipmentDto Other_Equipment = new com.tvi.sharing.dto.OtherEquipmentDto();
 			Other_Equipment.setOther_Equipment(otherEquipment);
+			dto.setOther_Equipment(Other_Equipment);*/
+			
+			List<com.tvi.sharing.dto.OtherEquipmentDto> Other_Equipment = new ArrayList<>();
+			sql = "SELECT `Feasibility`, `Source_Request_RefNo`, `Other_Equipment_Category`, "
+					+ "`Other_Equipment_Type`, `Equipment_to_be_relocated`, `Target_Indus_Site_Id`, "
+					+ "`Target_Request_RefNo`, `CustomerPunchedOrPlanning`, `Deletion_OR_Relocation` "
+					+ "FROM `Airtel_Other_Equipment` WHERE `SR_Number`='"+srNumber+"' and `InsertType`='SP'";
+			dataList = tviCommonDao.getAllTableData(sql);
+			com.tvi.sharing.dto.OtherEquipmentDto otEqObj = null;
+			for(Object [] dataObj : dataList){
+				otEqObj = new com.tvi.sharing.dto.OtherEquipmentDto();
+				otEqObj.setFeasibility(emptyString(dataObj[0]));
+				otEqObj.setSource_Request_RefNo(emptyString(dataObj[1]));
+				otEqObj.setOther_Equipment_Category(emptyString(dataObj[2]));
+				otEqObj.setOther_Equipment_Type(emptyString(dataObj[3]));
+				otEqObj.setEquipment_to_be_relocated(emptyString(dataObj[4]));
+				otEqObj.setTarget_Indus_Site_Id(emptyString(dataObj[5]));
+				otEqObj.setTarget_Request_RefNo(emptyString(dataObj[6]));
+				otEqObj.setCustomerPunchedOrPlanning(emptyString(dataObj[7]));
+				otEqObj.setDeletion_OR_Relocation(emptyString(dataObj[8]));
+				Other_Equipment.add(otEqObj);
+			}
 			dto.setOther_Equipment(Other_Equipment);
 			
 			com.tvi.sharing.dto.StrageticDto Strategic_Conversion = new com.tvi.sharing.dto.StrageticDto();
@@ -2978,7 +3091,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	private SpReceivedUpgradeDto getUpgradeSrDetailsForSendToAirtel(String srNumber) {
 		SpReceivedUpgradeDto dto = new SpReceivedUpgradeDto();
 		try {
-			String otherEquipment = "",isDieselGeneratorDGrequired = "",circle="",networkType="",
+			String circle="",networkType="",
 				Ass_AreyouWorkingInAnyBhartiGroup="",Ass_IfyesmentiontheBhartiUnitName="",
 				Ass_NameOftheEmployee="",Ass_EmployeeId="",Rel_AnyRelativesareWorkingWithBhartiGroup="",
 				Rel_IfyesmentiontheBhartiUnitName="",Rel_NameOftheEmployee="",Rel_EmployeeId="",
@@ -3010,8 +3123,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				SPDetails_NN.setSiteType(emptyString(dataObj[3]));
 				SPDetails_NN.setProject_Name(emptyString(dataObj[4]));
 				//SPDetails_NN.setCity(emptyString(dataObj[5]));	
-				otherEquipment = emptyString(dataObj[6]);
-				isDieselGeneratorDGrequired = emptyString(dataObj[7]);
+				//otherEquipment = emptyString(dataObj[6]);
+				//isDieselGeneratorDGrequired = emptyString(dataObj[7]);
 				SPDetails_NN.setTOCO_Site_Id(emptyString(dataObj[8]));
 				SPDetails_NN.setDate_of_Proposal(dataObj[9] == null ? "" : emptyString(dataObj[9]));
 				SPDetails_NN.setPower_Rating(dataObj[10] == null ? "" : emptyString(dataObj[10]));
@@ -3323,8 +3436,30 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			Global.setNetwork_Type(networkType);
 			dto.setGlobal(Global);
 			
-			com.tvi.upgrade.dto.OtherEquipmentDto Other_Equipment = new com.tvi.upgrade.dto.OtherEquipmentDto();
+			/*com.tvi.upgrade.dto.OtherEquipmentDto Other_Equipment = new com.tvi.upgrade.dto.OtherEquipmentDto();
 			Other_Equipment.setOther_Equipment(otherEquipment);
+			dto.setOther_Equipment(Other_Equipment);*/
+			
+			List<com.tvi.upgrade.dto.OtherEquipmentDto> Other_Equipment = new ArrayList<>();
+			sql = "SELECT `Feasibility`, `Source_Request_RefNo`, `Other_Equipment_Category`, "
+					+ "`Other_Equipment_Type`, `Equipment_to_be_relocated`, `Target_Indus_Site_Id`, "
+					+ "`Target_Request_RefNo`, `CustomerPunchedOrPlanning`, `Deletion_OR_Relocation` "
+					+ "FROM `Airtel_Other_Equipment` WHERE `SR_Number`='"+srNumber+"' and `InsertType`='SP'";
+			dataList = tviCommonDao.getAllTableData(sql);
+			com.tvi.upgrade.dto.OtherEquipmentDto otEqObj = null;
+			for(Object [] dataObj : dataList){
+				otEqObj = new com.tvi.upgrade.dto.OtherEquipmentDto();
+				otEqObj.setFeasibility(emptyString(dataObj[0]));
+				otEqObj.setSource_Request_RefNo(emptyString(dataObj[1]));
+				otEqObj.setOther_Equipment_Category(emptyString(dataObj[2]));
+				otEqObj.setOther_Equipment_Type(emptyString(dataObj[3]));
+				otEqObj.setEquipment_to_be_relocated(emptyString(dataObj[4]));
+				otEqObj.setTarget_Indus_Site_Id(emptyString(dataObj[5]));
+				otEqObj.setTarget_Request_RefNo(emptyString(dataObj[6]));
+				otEqObj.setCustomerPunchedOrPlanning(emptyString(dataObj[7]));
+				otEqObj.setDeletion_OR_Relocation(emptyString(dataObj[8]));
+				Other_Equipment.add(otEqObj);
+			}
 			dto.setOther_Equipment(Other_Equipment);
 			
 			com.tvi.upgrade.dto.StrageticDto Strategic_Conversion = new com.tvi.upgrade.dto.StrageticDto();

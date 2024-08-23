@@ -9,6 +9,7 @@ import com.tvi.dto.BtsCabinetDto;
 import com.tvi.dto.FibreNodeDto;
 import com.tvi.dto.McbDto;
 import com.tvi.dto.MwAntennaDto;
+import com.tvi.dto.OtherEquipmentDto;
 import com.tvi.dto.OtherNodeDto;
 import com.tvi.dto.RadioAntennaDto;
 import com.tvi.upgrade.dto.TmaTmbDto;
@@ -41,7 +42,7 @@ public class AirtelCommonResponse {
 	Search_Ring_Radious_Mtrs,Infill_NewTown,ShowCase_Non_Showcase,_3_11_Towns,Town,Request_for_Network_Type,
 	Authority_Name,Preferred_Product_Type,Recommended_Product_Type_by_Acquisition,Customer_Product_Type,
 	No_of_TMA_TMB,Weight_of_each_TMA_TMB,Combined_wt_of_TMA_TMB_Kgs,Height_at_which_needs_to_be_mounted_Mtrs,
-	Other_Equipment,Fiber_Required,No_of_Fiber_Pairs,Is_Fiber_Node_Provisioning_Required,No_of_Pairs,
+	Fiber_Required,No_of_Fiber_Pairs,Is_Fiber_Node_Provisioning_Required,No_of_Pairs,
 	Distance_Length_of_Fiber_in_Meter,SACFA_Number,Is_Diesel_Generator_DG_required,Product_Name,Request_Ref_No,
 	BSC,BTS_Cabinett,Extend_Tenure,Fiber_Node_Provisioning,Micro_to_Macro_conversion,MW_Antennaa,Other_Nodes,
 	Radio_Antennaa,Strategic_Conversion,Tower_Mounted_Booster,MW_IDUU,Pole,HubTag_Untag,Cluster,MSA_Type,
@@ -67,6 +68,7 @@ public class AirtelCommonResponse {
 	private List<McbDto> MCB;
 	private List<FibreNodeDto> Fibre_Node;
 	private List<TmaTmbDto> TMA_TMB;
+	private List<OtherEquipmentDto> Other_Equipment;
 	private List<AttachmentDto> attachedList;
 	private List<AirtelAuditDto> auditList;
 	
@@ -851,10 +853,10 @@ public class AirtelCommonResponse {
 	public void setHeight_at_which_needs_to_be_mounted_Mtrs(String height_at_which_needs_to_be_mounted_Mtrs) {
 		Height_at_which_needs_to_be_mounted_Mtrs = height_at_which_needs_to_be_mounted_Mtrs;
 	}
-	public String getOther_Equipment() {
+	public List<OtherEquipmentDto> getOther_Equipment() {
 		return Other_Equipment;
 	}
-	public void setOther_Equipment(String other_Equipment) {
+	public void setOther_Equipment(List<OtherEquipmentDto> other_Equipment) {
 		Other_Equipment = other_Equipment;
 	}
 	public String getFiber_Required() {

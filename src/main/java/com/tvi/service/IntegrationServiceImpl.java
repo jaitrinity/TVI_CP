@@ -498,17 +498,18 @@ public class IntegrationServiceImpl implements IntegrationService {
 			response.setResponseDesc("MCB : "+mcbData+" key is missing");
 			return response;
 		}
-		OtherEquipmentDto Other_Equipment = srDto.getOther_Equipment();
+//		OtherEquipmentDto Other_Equipment = srDto.getOther_Equipment();
+		List<OtherEquipmentDto> Other_Equipment = srDto.getOther_Equipment();
 		if(Other_Equipment == null){
 			response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
 			response.setResponseDesc("Other_Equipment json not found");
 			return response;
 		}
-		else if(Other_Equipment.getOther_Equipment() == null){
+		/*else if(Other_Equipment.getOther_Equipment() == null){
 			response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
 			response.setResponseDesc("Other_Equipment : Other_Equipment key is missing");
 			return response;
-		}
+		}*/
 		/*else if(Other_Equipment.getOther_Equipment().equalsIgnoreCase("")){
 			response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
 			response.setResponseDesc("Other_Equipment : Other_Equipment key is missing");
@@ -942,15 +943,21 @@ public class IntegrationServiceImpl implements IntegrationService {
 			response.setResponseDesc("MCB : "+mcbData+" key is missing");
 			return response;
 		}
-		com.tvi.sharing.dto.OtherEquipmentDto Other_Equipment = srDto.getOther_Equipment();
+//		com.tvi.sharing.dto.OtherEquipmentDto Other_Equipment = srDto.getOther_Equipment();
+//		if(Other_Equipment == null){
+//			response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
+//			response.setResponseDesc("Other_Equipment json not found");
+//			return response;
+//		}
+//		else if(Other_Equipment.getOther_Equipment() == null){
+//			response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
+//			response.setResponseDesc("Other_Equipment : Other_Equipment key is missing");
+//			return response;
+//		}
+		List<com.tvi.sharing.dto.OtherEquipmentDto> Other_Equipment = srDto.getOther_Equipment();
 		if(Other_Equipment == null){
 			response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
 			response.setResponseDesc("Other_Equipment json not found");
-			return response;
-		}
-		else if(Other_Equipment.getOther_Equipment() == null){
-			response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
-			response.setResponseDesc("Other_Equipment : Other_Equipment key is missing");
 			return response;
 		}
 		com.tvi.sharing.dto.FiberDto Fiber = srDto.getFiber();
@@ -1465,7 +1472,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 			response.setResponseDesc("MCB : "+mcbData+" key is missing");
 			return response;
 		}
-		com.tvi.upgrade.dto.OtherEquipmentDto Other_Equipment = srDto.getOther_Equipment();
+		/*com.tvi.upgrade.dto.OtherEquipmentDto Other_Equipment = srDto.getOther_Equipment();
 		if(Other_Equipment == null){
 			response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
 			response.setResponseDesc("Other_Equipment json not found");
@@ -1474,6 +1481,12 @@ public class IntegrationServiceImpl implements IntegrationService {
 		else if(Other_Equipment.getOther_Equipment() == null){
 			response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
 			response.setResponseDesc("Other_Equipment : Other_Equipment key is missing");
+			return response;
+		}*/
+		List<com.tvi.upgrade.dto.OtherEquipmentDto> Other_Equipment = srDto.getOther_Equipment();
+		if(Other_Equipment == null){
+			response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
+			response.setResponseDesc("Other_Equipment json not found");
 			return response;
 		}
 		com.tvi.upgrade.dto.SacfaDto SACFA = srDto.getSACFA();

@@ -17,7 +17,9 @@ import com.tvi.request.RRU_SwapRequest;
 
 public class CommonDTO {
 	private int pageNum, maxRecord, recordOnApage;
-	private String filterSrNumber="",filterCircleName="",filterTviSiteId="",filterSiteId="",filterProductType="",filterSrStatus="",filterStartDate="",filterEndDate="",filterOperator="",mobileNumber,newPassword,operator="",currentTab;
+	private String filterSrNumber="",filterCircleName="",filterTviSiteId="",filterSiteId="",filterProductType="",
+			filterSrStatus="",filterStartDate="",filterEndDate="",filterOperator="",mobileNumber,newPassword,operator="",
+			currentTab,currentStatus="";
 	private String loginEmpId,loginEmpRole,isHoUser,circleName,paramCode,paramDesc,district,state,tabName,action;
 	private Double ebAvailabilityDistance,suggestedLatitude,suggestedLongitude,suggestedCityPremium,
 	suggestedEbAvailablilityDistance,suggestedTowerHeight,suggestedBuildingHeight,totalRatedPower,additionalLoad,windSpeed,loadOfU,
@@ -1548,6 +1550,14 @@ public class CommonDTO {
 
 	public void seteSeafPortalUrl(String eSeafPortalUrl) {
 		this.eSeafPortalUrl = eSeafPortalUrl;
+	}
+
+	public String getCurrentStatus() {
+		return currentStatus;
+	}
+
+	public void setCurrentStatus(String currentStatus) {
+		this.currentStatus = currentStatus;
 	}	
 	
 	

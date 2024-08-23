@@ -20,6 +20,7 @@ import com.tvi.constant.Response;
 import com.tvi.constant.ReturnsCode;
 import com.tvi.constant.SendMail;
 import com.tvi.constant.SendSMS;
+import com.tvi.dto.ActionButtonDTO;
 import com.tvi.dto.BulkDTO;
 import com.tvi.dto.BulkSrDTO;
 import com.tvi.dto.CommonDTO;
@@ -32,6 +33,7 @@ import com.tvi.entity.NbsAuditEntity;
 import com.tvi.entity.NbsMasterDetEntity;
 import com.tvi.entity.NbsMasterHdrEntity;
 import com.tvi.entity.ResponseTableModel;
+import com.tvi.request.AirFiberRequest;
 import com.tvi.request.BBURequest;
 import com.tvi.request.BTSRequest;
 import com.tvi.request.EmployeeActionRequest;
@@ -166,6 +168,7 @@ public class TviDaoImpl implements TviDao {
 		try {
 			Date d = new Date();
 			String srNumber = "";
+			String circleName = jsonData.getCircleName();
 			if(jsonData.getCurrentTab().equalsIgnoreCase(Constant.CreateNBS)){
 				String sql = "SELECT `SR_NUMBER` FROM `NBS_MASTER_HDR` where `TAB_NAME` = '"+Constant.CreateNBS+"' and `LATITUDE_1` = '"+jsonData.getLatitude1()+"' and `LONGITUDE_1` = '"+jsonData.getLongitude1()+"' and `STATUS` not in ('NB97','NB98','NB99','NB100') ";
 				boolean isExistByLatong = tviCommonDao.isExistSR(sql);
@@ -182,80 +185,85 @@ public class TviDaoImpl implements TviDao {
 					return response;
 				}
 				
-				srNumber = "NB_SR"+d.getTime();
+				srNumber = "NB_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDet(jsonData);
 			}
 			else if (jsonData.getCurrentTab().equalsIgnoreCase(Constant.ODSC_Anchor)){
-				srNumber = "OD_SR"+d.getTime();
+				srNumber = "OD_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetOfODSCAnchor(jsonData);
 			}
 			else if(jsonData.getCurrentTab().equalsIgnoreCase(Constant.New_Tenency)){
-				srNumber = "NT_SR"+d.getTime();
+				srNumber = "NT_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDet(jsonData);
 			}
 			else if(jsonData.getCurrentTab().equalsIgnoreCase(Constant.Site_Upgrade)){
-				srNumber = "SU_SR"+d.getTime();
+				srNumber = "SU_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetOfSiteUpgrade(jsonData);
 			}
 			else if(jsonData.getCurrentTab().equalsIgnoreCase(Constant.I_WAN)){
-				srNumber = "IWAN_SR"+d.getTime();
+				srNumber = "IWAN_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetOfIwan(jsonData);
 			}
 			else if(jsonData.getCurrentTab().equalsIgnoreCase(Constant.HPSC)){
-				srNumber = "HPSC_SR"+d.getTime();
+				srNumber = "HPSC_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetOfODSCAnchor(jsonData);
 			}
 			else if(jsonData.getCurrentTab().equalsIgnoreCase(Constant.MCU)){
-				srNumber = "MCU_SR"+d.getTime();
+				srNumber = "MCU_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetOfMcu(jsonData);
 			}
 			else if(jsonData.getCurrentTab().equalsIgnoreCase(Constant.UBR)){
-				srNumber = "UBR_SR"+d.getTime();
+				srNumber = "UBR_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetOfIwan(jsonData);
 			}
 			else if (jsonData.getCurrentTab().equalsIgnoreCase(Constant.ODSC_Sharing)){
-				srNumber = "OD_Share_SR"+d.getTime();
+				srNumber = "OD_Share_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetODSCSharing(jsonData);
 			}
 			else if (jsonData.getCurrentTab().equalsIgnoreCase(Constant.HPSC_Sharing)){
-				srNumber = "HPSC_Share_SR"+d.getTime();
+				srNumber = "HPSC_Share_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetODSCSharing(jsonData);
 			}
 			
 			else if (jsonData.getCurrentTab().equalsIgnoreCase(Constant.Fibre_Termination)){
-				srNumber = "FT_SR"+d.getTime();
+				srNumber = "FT_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetOfFibreTermination(jsonData);
 			}
 			else if (jsonData.getCurrentTab().equalsIgnoreCase(Constant.TCL_Redwin)){
-				srNumber = "Redwin_SR"+d.getTime();
+				srNumber = "Redwin_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetOfTclRewin(jsonData);
 			}
 			else if (jsonData.getCurrentTab().equalsIgnoreCase(Constant.HEX_OLT)){
-				srNumber = "HEX_SR"+d.getTime();
+				srNumber = "HEX_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetOfHexOlt(jsonData);
 			}
 			else if (jsonData.getCurrentTab().equalsIgnoreCase(Constant.Smart_Split)){
-				srNumber = "SS_SR"+d.getTime();
+				srNumber = "SS_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetSmartSplit(jsonData);
 			}
 			else if (jsonData.getCurrentTab().equalsIgnoreCase(Constant.TCU)){
-				srNumber = "TCU_SR"+d.getTime();
+				srNumber = "TCU_SR"+circleName+""+d.getTime();
 				jsonData.setSrNumber(srNumber);
 				tviCommonDao.insertHdrAndDetTCU(jsonData);
+			}
+			else if (jsonData.getCurrentTab().equalsIgnoreCase(Constant.Air_Fiber)){
+				srNumber = "AF_SR_"+circleName+""+d.getTime();
+				jsonData.setSrNumber(srNumber);
+				tviCommonDao.insertHdrAndDetAF(jsonData);
 			}
 						
 			prepareForSendMail(srNumber, "NA", "NA", jsonData.getCircleName(), jsonData.getOperator(), "NB01", jsonData.getCurrentTab(),errorsMap);
@@ -400,6 +408,7 @@ public class TviDaoImpl implements TviDao {
 			Map<String, String> hexOltStatusMap = new HashMap<String, String>();
 			Map<String, String> smartSplitStatusMap = new HashMap<String, String>();
 			Map<String, String> tcuStatusMap = new HashMap<String, String>();
+//			Map<String, String> airFiberStatusMap = new HashMap<String, String>();
 			List<Object[]> result = tviCommonDao.getAllNbsStatus();
 			for(Object [] obj : result){
 				String status = String.valueOf(obj[0]);
@@ -432,6 +441,7 @@ public class TviDaoImpl implements TviDao {
 				}
 				else if(tabName.equalsIgnoreCase(Constant.UBR)){
 					ubrStatusMap.put(status, description+":"+decsDetails);
+//					airFiberStatusMap.put(status, description+":"+decsDetails);
 				}
 				else if(tabName.equalsIgnoreCase(Constant.ODSC_Sharing)){
 					odscSharingStatusMap.put(status, description+":"+decsDetails);
@@ -737,7 +747,8 @@ public class TviDaoImpl implements TviDao {
 							data.setPendingFor(status.split(":")[1]);
 						}
 					}
-					else if(data.getCurrentTab().equalsIgnoreCase(Constant.UBR)){
+					else if(data.getCurrentTab().equalsIgnoreCase(Constant.UBR) || 
+							data.getCurrentTab().equalsIgnoreCase(Constant.Air_Fiber)){
 						if(jsonData.getLoginEmpRole().equalsIgnoreCase("OPCO") && !(data.getStatus().equalsIgnoreCase("NB12") || data.getStatus().equalsIgnoreCase("NB100"))){ 
 							data.setPendingTo("WIP");
 							data.setPendingFor("WIP");
@@ -1005,6 +1016,21 @@ public class TviDaoImpl implements TviDao {
 		List<SaveNBSRequest> list = new ArrayList<SaveNBSRequest>();
 		try {
 			SaveNBSRequest data = new SaveNBSRequest();
+			String sql = "SELECT `Button`, `AfterStatus` FROM `TVI_ActionButton` where "
+					+ "find_in_set('"+jsonData.getTabName()+"',`TabName`) <> 0 "
+//					+ "`TabName` = '"+jsonData.getTabName()+"' "
+					+ "and `Role` = '"+jsonData.getLoginEmpRole()+"' "
+					+ "and find_in_set('"+jsonData.getCurrentStatus()+"',`CurrentStatus`) <> 0 and `IsActive` = 1";
+			List<Object []> dataList = tviCommonDao.getAllTableData(sql);
+			List<ActionButtonDTO> actionButtonList = new ArrayList<ActionButtonDTO>();
+			ActionButtonDTO actionButton = null;
+			for(Object [] dataObj : dataList){
+				actionButton = new ActionButtonDTO();
+				actionButton.setButton(dataObj[0] == null ? "" : emptyString(dataObj[0]));
+				actionButton.setAfterStatus(dataObj[1] == null ? "" : emptyString(dataObj[1]));
+				actionButtonList.add(actionButton);
+			}
+			data.setActionButtonList(actionButtonList);
 			data.setSrNumber(jsonData.getSrNumber());
 			data.setLoginEmpRole(jsonData.getLoginEmpRole());
 			prepareNbsDetAndAuditData(data);
@@ -1025,6 +1051,13 @@ public class TviDaoImpl implements TviDao {
 			response.setResponseDesc(e.toString());
 		}
 		return response;
+	}
+	
+	private String emptyString(Object obj){
+		String value = String.valueOf(obj);
+		if(value.equalsIgnoreCase("null"))
+			return "";
+		return value;
 	}
 	
 	private String createPagination(int maxRecord, int recordOnApage) {
@@ -1064,6 +1097,7 @@ public class TviDaoImpl implements TviDao {
 			List<BBURequest> bbuAddList = new ArrayList<>();
 			List<PoleRequest> noOfPoleList = new ArrayList<>();
 			List<HPSCAntennaRequest> noOfHPSCAntennaList = new ArrayList<>();
+			List<AirFiberRequest> airFiberList = new ArrayList<>();
 			
 			ODSCRequest odscData = null;
 			RFAntennaRequest rfAntennaData = null;
@@ -1085,6 +1119,7 @@ public class TviDaoImpl implements TviDao {
 			BBURequest bbuAddData = null;
 			PoleRequest poleData = null;
 			HPSCAntennaRequest hpscAntennaData = null;
+			AirFiberRequest airFiberData = null;
 			
 			List<NbsMasterDetEntity> nbsDet = tviCommonDao.getNbsDetailsBySrNumber(data.getSrNumber());
 			for(NbsMasterDetEntity d : nbsDet){
@@ -1250,6 +1285,19 @@ public class TviDaoImpl implements TviDao {
 					hpscAntennaData.setTypeOfHpscAntenna(d.getTypeofHpscAntenna());
 					noOfHPSCAntennaList.add(hpscAntennaData);
 				}
+				else if(d.getType().equalsIgnoreCase(Constant.Air_Fiber)){
+					airFiberData = new AirFiberRequest();
+					airFiberData.setMake(d.getMake());
+					airFiberData.setModel(d.getModel());
+					airFiberData.setDimensions(d.getDimensions());
+					airFiberData.setWeight(d.getWeight());
+					airFiberData.setBand(d.getBand());
+					airFiberData.setTechnology(d.getTechnology());
+					airFiberData.setLoad(d.getLoad());
+					airFiberData.setMcb(d.getMcb());
+					airFiberData.setEquipPlacement(d.getEquipPlacement());
+					airFiberList.add(airFiberData);
+				}
 			}
 			
 			List<NbsAuditDTO> auditList = new ArrayList<>();
@@ -1295,6 +1343,7 @@ public class TviDaoImpl implements TviDao {
 			data.setRruAddList(rruAddList);
 			data.setNoOfPoleList(noOfPoleList);
 			data.setNoOfHPSCAntennaList(noOfHPSCAntennaList);
+			data.setAirFiberList(airFiberList);
 			data.setNbsAuditList(auditList);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1627,6 +1676,15 @@ public class TviDaoImpl implements TviDao {
 						
 				}
 				else if(jsonData.getCurrentTab().equalsIgnoreCase(Constant.CreateNBS) && jsonData.getStatus().equalsIgnoreCase("NB08")){
+					String tviSiteId = jsonData.getTviSiteId();
+					String sql = "SELECT `TVISiteID` FROM `Site_Master` where `TVISiteID` = '"+tviSiteId+"' ";
+					boolean isExist = tviCommonDao.isExistSR(sql);
+					if(isExist){
+						response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
+						response.setResponseDesc(ReturnsCode.ALREADY_EXIST+" TVI Site Id  = "+tviSiteId+" in Site Master.");
+						return response;
+					}
+					nbsHdr.setTviSiteId(tviSiteId);
 					nbsHdr.setAirtelLocatorId(jsonData.getAirtelLocatorId());
 					nbsHdr.setSuggestedLatitude(jsonData.getSuggestedLatitude());
 					nbsHdr.setSuggestedLongitude(jsonData.getSuggestedLongitude());
@@ -1709,6 +1767,15 @@ public class TviDaoImpl implements TviDao {
 						jsonData.getCurrentTab().equalsIgnoreCase(Constant.ODSC_Sharing) || 
 						jsonData.getCurrentTab().equalsIgnoreCase(Constant.Smart_Split) ||
 						jsonData.getCurrentTab().equalsIgnoreCase(Constant.HPSC_Sharing)) && jsonData.getStatus().equalsIgnoreCase("NB09")){
+					String tviSiteId = jsonData.getTviSiteId();
+					String sql = "SELECT `TVISiteID` FROM `Site_Master` where `TVISiteID` = '"+tviSiteId+"' ";
+					boolean isExist = tviCommonDao.isExistSR(sql);
+					if(isExist){
+						response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
+						response.setResponseDesc(ReturnsCode.ALREADY_EXIST+" TVI Site Id  = "+tviSiteId+" in Site Master.");
+						return response;
+					}
+					nbsHdr.setTviSiteId(tviSiteId);
 					nbsHdr.setOdscModelType(jsonData.getOdscModelType());
 					if(jsonData.getAnyAttachedStr() != null && jsonData.getAnyAttachedStr() !="")
 						nbsHdr.setSalesAttachment(jsonData.getAnyAttachedStr());
@@ -1759,18 +1826,18 @@ public class TviDaoImpl implements TviDao {
 					nbsHdr.setRfiDocAttachment(jsonData.getRfiAttachedStr());
 					
 				}
-				else if((jsonData.getCurrentTab().equalsIgnoreCase(Constant.CreateNBS)) && 
-						jsonData.getStatus().equalsIgnoreCase("NB15")){
-					String tviSiteId = jsonData.getTviSiteId();
-					String sql = "SELECT `TVISiteID` FROM `Site_Master` where `TVISiteID` = '"+tviSiteId+"' ";
-					boolean isExist = tviCommonDao.isExistSR(sql);
-					if(isExist){
-						response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
-						response.setResponseDesc(ReturnsCode.ALREADY_EXIST+" TVI Site Id  = "+tviSiteId+" in Site Master.");
-						return response;
-					}
-					nbsHdr.setTviSiteId(tviSiteId);
-				}
+//				else if((jsonData.getCurrentTab().equalsIgnoreCase(Constant.CreateNBS)) && 
+//						jsonData.getStatus().equalsIgnoreCase("NB15")){
+//					String tviSiteId = jsonData.getTviSiteId();
+//					String sql = "SELECT `TVISiteID` FROM `Site_Master` where `TVISiteID` = '"+tviSiteId+"' ";
+//					boolean isExist = tviCommonDao.isExistSR(sql);
+//					if(isExist){
+//						response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
+//						response.setResponseDesc(ReturnsCode.ALREADY_EXIST+" TVI Site Id  = "+tviSiteId+" in Site Master.");
+//						return response;
+//					}
+//					nbsHdr.setTviSiteId(tviSiteId);
+//				}
 				else if((jsonData.getCurrentTab().equalsIgnoreCase(Constant.CreateNBS)) && 
 						jsonData.getStatus().equalsIgnoreCase("NB16")){
 					/*String strRfiDate = jsonData.getRfiDate();
@@ -1784,18 +1851,18 @@ public class TviDaoImpl implements TviDao {
 						jsonData.getCurrentTab().equalsIgnoreCase(Constant.Smart_Split) ||
 						jsonData.getCurrentTab().equalsIgnoreCase(Constant.HPSC_Sharing)) && 
 						jsonData.getStatus().equalsIgnoreCase("NB16")){
-					String tviSiteId = jsonData.getTviSiteId();
-					String sql = "SELECT `TVISiteID` FROM `Site_Master` where `TVISiteID` = '"+tviSiteId+"' ";
-					boolean isExist = tviCommonDao.isExistSR(sql);
-					if(isExist){
-						response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
-						response.setResponseDesc(ReturnsCode.ALREADY_EXIST+" TVI Site Id  = "+tviSiteId+" in Site Master.");
-						return response;
-					}
+//					String tviSiteId = jsonData.getTviSiteId();
+//					String sql = "SELECT `TVISiteID` FROM `Site_Master` where `TVISiteID` = '"+tviSiteId+"' ";
+//					boolean isExist = tviCommonDao.isExistSR(sql);
+//					if(isExist){
+//						response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
+//						response.setResponseDesc(ReturnsCode.ALREADY_EXIST+" TVI Site Id  = "+tviSiteId+" in Site Master.");
+//						return response;
+//					}
+//					nbsHdr.setTviSiteId(tviSiteId);
 					/*String strRfiDate = jsonData.getRfiDate();
 					nbsHdr.setRfiDate(CommonFunction.convertStrDateToUtilDate(strRfiDate));*/
 					nbsHdr.setRfiDate(new Date());
-					nbsHdr.setTviSiteId(tviSiteId);
 					nbsHdr.setRfiDocAttachment(jsonData.getRfiAttachedStr());
 				}
 				else if((jsonData.getCurrentTab().equalsIgnoreCase(Constant.New_Tenency) || 
@@ -1918,7 +1985,9 @@ public class TviDaoImpl implements TviDao {
 					changeDataForSiteUpgrade(nbsHdr,jsonData);
 				}
 				else if(jsonData.getCurrentTab().equalsIgnoreCase(Constant.I_WAN) || 
-						jsonData.getCurrentTab().equalsIgnoreCase(Constant.UBR)){
+						jsonData.getCurrentTab().equalsIgnoreCase(Constant.UBR) || 
+						jsonData.getCurrentTab().equalsIgnoreCase(Constant.Air_Fiber)
+						){
 					changeDataForIwan(nbsHdr,jsonData);
 				}
 				else if(jsonData.getCurrentTab().equalsIgnoreCase(Constant.MCU)){

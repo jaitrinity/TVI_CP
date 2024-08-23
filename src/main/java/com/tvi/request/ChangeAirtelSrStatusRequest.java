@@ -8,6 +8,7 @@ import com.tvi.dto.ValidBtsDto;
 import com.tvi.dto.ValidFibreNodeDto;
 import com.tvi.dto.ValidMcbDto;
 import com.tvi.dto.ValidMwAntennaDto;
+import com.tvi.dto.ValidOtherEquipmentDto;
 import com.tvi.dto.ValidOtherNodeDto;
 import com.tvi.dto.ValidRadioAntennaDto;
 import com.tvi.dto.ValidTmaTmbDto;
@@ -23,6 +24,7 @@ public class ChangeAirtelSrStatusRequest {
 	private List<ValidMcbDto> validMcbList;
 	private List<ValidFibreNodeDto> validFibreNodeList;
 	private List<ValidTmaTmbDto> validTmaTmbList;
+	private List<ValidOtherEquipmentDto> validOtherEquipmentList;
 	private List<AttachmentDto> attachedList;
 	
 	private String TOCO_Site_Id,viewTocoSiteId,Date_of_Proposal,Power_Rating,Site_Electrification_Distance,Tentative_EB_Availibility,
@@ -659,5 +661,11 @@ public class ChangeAirtelSrStatusRequest {
 	}
 	public void setDeclaration(String declaration) {
 		Declaration = declaration;
+	}
+	public List<ValidOtherEquipmentDto> getValidOtherEquipmentList() {
+		return validOtherEquipmentList;
+	}
+	public void setValidOtherEquipmentList(List<ValidOtherEquipmentDto> validOtherEquipmentList) {
+		this.validOtherEquipmentList = validOtherEquipmentList;
 	}
 }

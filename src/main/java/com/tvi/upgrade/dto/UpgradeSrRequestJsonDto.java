@@ -16,7 +16,8 @@ public class UpgradeSrRequestJsonDto {
 	private BtsDto BTS;
 	private AdditionalInformationDto Additional_Information;
 	private McbDto MCB;
-	private OtherEquipmentDto Other_Equipment;
+//	private OtherEquipmentDto Other_Equipment;
+	private List<OtherEquipmentDto> Other_Equipment;
 	private SacfaDto SACFA;
 	
 	public GlobalDto getGlobal() {
@@ -93,10 +94,10 @@ public class UpgradeSrRequestJsonDto {
 	public void setMCB(McbDto mCB) {
 		MCB = mCB;
 	}
-	public OtherEquipmentDto getOther_Equipment() {
+	public List<OtherEquipmentDto> getOther_Equipment() {
 		return Other_Equipment;
 	}
-	public void setOther_Equipment(OtherEquipmentDto other_Equipment) {
+	public void setOther_Equipment(List<OtherEquipmentDto> other_Equipment) {
 		Other_Equipment = other_Equipment;
 	}
 	public SacfaDto getSACFA() {

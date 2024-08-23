@@ -13,7 +13,8 @@ public class SpReceivedSharingDto {
 	private List<McbDto> MCB;
 	private List<FibreNodeDto> Fiber_Node;
 	private GlobalDto Global;
-	private OtherEquipmentDto Other_Equipment;
+//	private OtherEquipmentDto Other_Equipment;
+	private List<OtherEquipmentDto> Other_Equipment;
 	private StrageticDto Strategic_Conversion;
 	private DgDto DG;
 	private String Association_AreyouWorkingInAnyBhartiGroup,Association_IfyesmentiontheBhartiUnitName,
@@ -75,10 +76,10 @@ public class SpReceivedSharingDto {
 	public void setGlobal(GlobalDto global) {
 		Global = global;
 	}
-	public OtherEquipmentDto getOther_Equipment() {
+	public List<OtherEquipmentDto> getOther_Equipment() {
 		return Other_Equipment;
 	}
-	public void setOther_Equipment(OtherEquipmentDto other_Equipment) {
+	public void setOther_Equipment(List<OtherEquipmentDto> other_Equipment) {
 		Other_Equipment = other_Equipment;
 	}
 	public StrageticDto getStrategic_Conversion() {

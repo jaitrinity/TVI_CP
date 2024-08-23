@@ -1,8 +1,8 @@
 package com.tvi.constant;
 
 public class Constant {
-	public static final String MAIL_SEND_FROM = "communication@trinityapplab.co.in";
-	public static final String MAIL_SEND_PWD = "communication@Trinity";
+	public static final String MAIL_SEND_FROM = "";
+	public static final String MAIL_SEND_PWD = "";
 	public static final String GSM_ANTENNA = "GSM_ANTENNA";
 	public static final String MICROWAVE = "MICROWAVE";
 	public static final String MICROWAVE_Delete = "MICROWAVE_Delete";
@@ -66,6 +66,7 @@ public class Constant {
 	public static final String HEX_OLT = "HEX_OLT";
 	public static final String Smart_Split = "Smart_Split";
 	public static final String TCU = "TCU";
+	public static final String Air_Fiber = "Air_Fiber";
 	
 	public static final String ULS = "ULS";
 	public static final String MICRO = "MICRO";

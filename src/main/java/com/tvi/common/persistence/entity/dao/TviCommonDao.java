@@ -119,4 +119,6 @@ public interface TviCommonDao {
 	
 	public boolean soSubmit(SoSubmitDto jsonData);
 
+	void insertHdrAndDetAF(SaveNBSRequest jsonData);
+
 }

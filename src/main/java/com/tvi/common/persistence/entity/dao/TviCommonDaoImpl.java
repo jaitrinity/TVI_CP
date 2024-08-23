@@ -45,6 +45,7 @@ import com.tvi.entity.EmployeeMasterEntity;
 import com.tvi.entity.NbsMasterDetEntity;
 import com.tvi.entity.NbsMasterHdrEntity;
 import com.tvi.generic.common.GenericDaoImpl;
+import com.tvi.request.AirFiberRequest;
 import com.tvi.request.BBURequest;
 import com.tvi.request.BTSRequest;
 import com.tvi.request.EmployeeActionRequest;
@@ -339,9 +340,9 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 		}
 		
 		if(!jsonData.getFilterSrNumber().equalsIgnoreCase("")){
-			sql += " and (h.srNumber like '"+jsonData.getFilterSrNumber()+"' or "
-					+ "h.spNumber like '"+jsonData.getFilterSrNumber()+"' or "
-					+ "h.soNumber like '"+jsonData.getFilterSrNumber()+"') ";
+			sql += " and (h.srNumber like '%"+jsonData.getFilterSrNumber()+"%' or "
+					+ "h.spNumber like '%"+jsonData.getFilterSrNumber()+"%' or "
+					+ "h.soNumber like '%"+jsonData.getFilterSrNumber()+"%') ";
 		}
 		
 		if(!jsonData.getFilterCircleName().equalsIgnoreCase("")){
@@ -1561,7 +1562,7 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 		SiteDetailDto siteDetail = srRequestJson.getSite_Detail();
 		ProductDetailDto productDetail = srRequestJson.getProduct_Detail();
 		TmaTmbDto tmatmb = srRequestJson.getTMA_TMB();
-		OtherEquipmentDto otherEquipment = srRequestJson.getOther_Equipment();
+//		OtherEquipmentDto otherEquipment = srRequestJson.getOther_Equipment();
 		FiberDto fiber = srRequestJson.getFiber();
 		FiberNodeProvisioningDto fbp = srRequestJson.getFiber_Node_Provisioning();
 		SacfaDto sacfa = srRequestJson.getSACFA();
@@ -1578,19 +1579,19 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 				+ "`Project_Name`, `Authority_Name`, `Preferred_Product_Type`, "
 				+ "`Customer_Product_Type`, `No_of_TMA_TMB`, `Weight_of_each_TMA_TMB`, "
 				+ "`Combined_wt_of_TMA_TMB_Kgs`, `Height_at_which_needs_to_be_mounted_Mtrs`, "
-				+ "`Other_Equipment`, `Fiber_Required`, `No_of_Fiber_Pairs`, "
+				+ "`Fiber_Required`, `No_of_Fiber_Pairs`, "
 				+ "`Is_Fiber_Node_Provisioning_Required`, `No_of_Pairs`, `Distance_Length_of_Fiber_in_Meter`, "
 				+ "`SACFA_Number`, `Is_Diesel_Generator_DG_required`, `STATUS`, `SR_DATE`, `TAB_NAME`)";
 		sql += " VALUES ";
 		sql += " ('"+srNumber+"', '"+srRequestJson.getRef_Number_TVIPL()+"', '"+srRequestJson.getSiteId()+"', '"+srRequestJson.getOperator()+"', '"+srRequestJson.getUniqueRequestId()+"', '"+srRequestJson.getGlobal().getRemarks()+"', "
-				+ "'"+siteDetail.getCustomer()+"', '"+siteDetail.getCustomer_Site_Id().trim()+"', '"+siteDetail.getCustomer_Site_Name()+"', "
+				+ "'"+siteDetail.getCustomer()+"', '"+siteDetail.getCustomer_Site_Id()+"', '"+siteDetail.getCustomer_Site_Name()+"', "
 				+ "'"+circleName+"', '"+circleCode+"', '"+siteDetail.getState()+"', '"+siteDetail.getCell_Type()+"', '"+siteDetail.getSite_Type()+"', "
 				+ "'"+siteDetail.getCity()+"', "+siteDetail.getSearch_Ring_Radious_Mtrs()+", '"+siteDetail.getInfill_NewTown()+"', '"+siteDetail.getShowCase_Non_Showcase()+"', "
 				+ "'"+siteDetail.get_3_11_Towns()+"', '"+siteDetail.getTown()+"', '"+siteDetail.getRequest_for_Network_Type()+"', "
 				+ "'"+siteDetail.getProject_Name()+"', '"+siteDetail.getAuthority_Name()+"', '"+productDetail.getPreferred_Product_Type()+"', "
 				+ "'"+productDetail.getCustomer_Product_Type()+"', "+tmatmb.getNo_of_TMA_TMB()+", "+tmatmb.getWeight_of_each_TMA_TMB()+", "
 				+ ""+tmatmb.getCombined_wt_of_TMA_TMB_Kgs()+", "+tmatmb.getHeight_at_which_needs_to_be_mounted_Mtrs()+", "
-				+ "'"+otherEquipment.getOther_Equipment()+"', '"+fiber.getFiber_Required()+"', '"+fiber.getNo_of_Fiber_Pairs()+"', "
+				+ "'"+fiber.getFiber_Required()+"', '"+fiber.getNo_of_Fiber_Pairs()+"', "
 				+ "'"+fbp.getIs_Fiber_Node_Provisioning_Required()+"', "+fbp.getNo_of_Pairs()+", "+fbp.getDistance_Length_of_Fiber_in_Meter()+", "
 				+ "'"+sacfa.getSACFA_Number()+"', '"+dg.getIs_Diesel_Generator_DG_required()+"', 'NB01', curdate(), '"+tabName+"') ";
 		int i = getEm().createNativeQuery(sql).executeUpdate();
@@ -1779,6 +1780,24 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 					typeNo++;
 				}
 			}
+			
+			// Other Equipment
+			List<OtherEquipmentDto> otherEquipment = srRequestJson.getOther_Equipment();
+			sql = "INSERT INTO `Airtel_Other_Equipment`(`SR_Number`, `Type_No`, `Source_Request_RefNo`, "
+					+ "`Other_Equipment_Category`, `Other_Equipment_Type`, `Equipment_to_be_relocated`, "
+					+ "`Target_Indus_Site_Id`, `Target_Request_RefNo`)";
+			sql += " VALUES ";
+			typeNo = 1;
+			for(OtherEquipmentDto otEq : otherEquipment){
+				String dataSql = "('"+srNumber+"', "+typeNo+", '"+otEq.getSource_Request_RefNo()+"', '"+otEq.getOther_Equipment_Category()+"', '"+otEq.getOther_Equipment_Type()+"', "
+						+ "'"+otEq.getEquipment_to_be_relocated()+"', '"+otEq.getTarget_Indus_Site_Id()+"', '"+otEq.getTarget_Request_RefNo()+"')";
+				
+				int exe = getEm().createNativeQuery(sql + dataSql).executeUpdate();
+				if(exe != 0){
+					typeNo++;
+				}
+			}
+						
 			totalRatedPowerInWatt = totalRatedPowerInKW * 1000;
 			String updatePowerRating = "UPDATE `Airtel_SR` set `Total_Rated_Power_In_KW` = "+totalRatedPowerInKW+", "
 			+ "`Total_Rated_Power_In_Watt` = "+totalRatedPowerInWatt+" where `SR_Number` = '"+srNumber+"' ";
@@ -1796,7 +1815,7 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 		com.tvi.sharing.dto.SiteDetailDto siteDetail = srRequestJson.getSite_Detail();
 		com.tvi.sharing.dto.ProductDetailDto proDetails = srRequestJson.getProduct_Detail();
 		com.tvi.sharing.dto.TmaTmbDto tmatmb = srRequestJson.getTMA_TMB();
-		com.tvi.sharing.dto.OtherEquipmentDto otherEquipment = srRequestJson.getOther_Equipment();
+//		com.tvi.sharing.dto.OtherEquipmentDto otherEquipment = srRequestJson.getOther_Equipment();
 		com.tvi.sharing.dto.FiberDto fiber = srRequestJson.getFiber();
 		com.tvi.sharing.dto.FiberNodeProvisioningDto fbp = srRequestJson.getFiber_Node_Provisioning();
 		com.tvi.sharing.dto.SacfaDto sacfa = srRequestJson.getSACFA();
@@ -1813,20 +1832,20 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 				+ "`Project_Name`, `Authority_Name`, "
 				+ "`Customer_Product_Type`, `No_of_TMA_TMB`, `Weight_of_each_TMA_TMB`, "
 				+ "`Combined_wt_of_TMA_TMB_Kgs`, `Height_at_which_needs_to_be_mounted_Mtrs`, "
-				+ "`Other_Equipment`, `Fiber_Required`, `No_of_Fiber_Pairs`, "
+				+ "`Fiber_Required`, `No_of_Fiber_Pairs`, "
 				+ "`Is_Fiber_Node_Provisioning_Required`, `No_of_Pairs`, `Distance_Length_of_Fiber_in_Meter`, "
 				+ "`SACFA_Number`, `Is_Diesel_Generator_DG_required`, `STATUS`, `SR_DATE`, `TAB_NAME`, "
 				+ "`Cluster`, `MSA_Type`, `Name_of_District_SSA`, `Product_Name`)";
 		sql += " VALUES ";
 		sql += " ('"+srNumber+"', '"+srRequestJson.getRef_Number_TVIPL()+"', '"+srRequestJson.getSiteId()+"', '"+srRequestJson.getOperator()+"', '"+srRequestJson.getUniqueRequestId()+"', '"+srRequestJson.getGlobal().getRemarks()+"', "
-				+ "'"+siteDetail.getTOCO_Site_Id()+"', '"+siteDetail.getCustomer()+"', '"+siteDetail.getCustomer_Site_Id().trim()+"', '"+siteDetail.getCustomer_Site_Name()+"', "
+				+ "'"+siteDetail.getTOCO_Site_Id()+"', '"+siteDetail.getCustomer()+"', '"+siteDetail.getCustomer_Site_Id()+"', '"+siteDetail.getCustomer_Site_Name()+"', "
 				+ "'"+circleName+"', '"+circleCode+"', '', '', '"+siteDetail.getShare_Type()+"', "
 				+ "'"+siteDetail.getCity()+"', '"+siteDetail.getInfill_NewTown()+"', '"+siteDetail.getShowCase_Non_Showcase()+"', "
 				+ "'"+siteDetail.get_3_11_Towns()+"', '"+siteDetail.getTown()+"', '"+siteDetail.getTargetDate_DD_MM_YYYY()+"', '"+siteDetail.getRequest_for_Network_Type()+"', "
 				+ "'"+siteDetail.getProject_Name()+"', '"+siteDetail.getAuthority_Name()+"', "
 				+ "'', "+tmatmb.getNo_of_TMA_TMB()+", "+tmatmb.getWeight_of_each_TMA_TMB()+", "
 				+ ""+tmatmb.getCombined_wt_of_TMA_TMB_Kgs()+", "+tmatmb.getHeight_at_which_needs_to_be_mounted_Mtrs()+", "
-				+ "'"+otherEquipment.getOther_Equipment()+"', '"+fiber.getFiber_Required()+"', '"+fiber.getNo_of_Fiber_Pairs()+"', "
+				+ "'"+fiber.getFiber_Required()+"', '"+fiber.getNo_of_Fiber_Pairs()+"', "
 				+ "'"+fbp.getIs_Fiber_Node_Provisioning_Required()+"', "+fbp.getNo_of_Pairs()+", "+fbp.getDistance_Length_of_Fiber_in_Meter()+", "
 				+ "'"+sacfa.getSACFA_Number()+"', '"+dg.getIs_Diesel_Generator_DG_required()+"', 'NB01', curdate(), '"+Constant.New_Tenency+"', "
 				+ "'"+circleInfo.getCluster()+"', '"+circleInfo.getMSA_Type()+"', '"+circleInfo.getName_of_District_SSA()+"', '"+proDetails.getProduct_Name()+"') ";
@@ -2006,6 +2025,23 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 				}
 			}
 			
+			// Other Equipment
+			List<com.tvi.sharing.dto.OtherEquipmentDto> otherEquipment = srRequestJson.getOther_Equipment();
+			sql = "INSERT INTO `Airtel_Other_Equipment`(`SR_Number`, `Type_No`, `Action`, `Source_Request_RefNo`, "
+					+ "`Other_Equipment_Category`, `Other_Equipment_Type`, `Equipment_to_be_relocated`, "
+					+ "`Target_Indus_Site_Id`, `Target_Request_RefNo`)";
+			sql += " VALUES ";
+			typeNo = 1;
+			for(com.tvi.sharing.dto.OtherEquipmentDto otEq : otherEquipment){
+				String dataSql = "('"+srNumber+"', "+typeNo+", '"+otEq.getAction()+"', '"+otEq.getSource_Request_RefNo()+"', '"+otEq.getOther_Equipment_Category()+"', '"+otEq.getOther_Equipment_Type()+"', "
+						+ "'"+otEq.getEquipment_to_be_relocated()+"', '"+otEq.getTarget_Indus_Site_Id()+"', '"+otEq.getTarget_Request_RefNo()+"')";
+				
+				int exe = getEm().createNativeQuery(sql + dataSql).executeUpdate();
+				if(exe != 0){
+					typeNo++;
+				}
+			}
+			
 			totalRatedPowerInWatt = totalRatedPowerInKW * 1000;
 			String updatePowerRating = "UPDATE `Airtel_SR` set `Total_Rated_Power_In_KW` = "+totalRatedPowerInKW+", "
 			+ "`Total_Rated_Power_In_Watt` = "+totalRatedPowerInWatt+" where `SR_Number` = '"+srNumber+"' ";
@@ -2022,7 +2058,6 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 		Double totalRatedPowerInKW = 0.0,totalRatedPowerInWatt;
 		com.tvi.upgrade.dto.GlobalDto global = srRequestJson.getGlobal();
 		RequestedEquipmentDto reqEquip = global.getRequested_Equipment();
-		com.tvi.upgrade.dto.OtherEquipmentDto otherEquipment = srRequestJson.getOther_Equipment();
 		com.tvi.upgrade.dto.FiberNodeProvisioningDto fbp = srRequestJson.getFiber_Node_Provisioning();
 		com.tvi.upgrade.dto.SacfaDto sacfa = srRequestJson.getSACFA();
 		String sql = "INSERT INTO `Airtel_SR`(`SR_Number`, `Ref_Number_TVIPL`, `SiteId`, `Operator`, `Remarks`, `Activity_Type`, "
@@ -2031,7 +2066,6 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 				+ "`MW_Antenna`, `Other_Nodes`, `Radio_Antenna`, `Strategic_Conversion`, "
 				+ "`Tower_Mounted_Booster`, `MW_IDU`, `Pole`, `HubTag_Untag`, `Other_Equipment2`, `Request_for_Network_Type`, "
 				+ "`Project_Name`, "
-				+ "`Other_Equipment`, "
 				+ "`Is_Fiber_Node_Provisioning_Required`, `No_of_Pairs`, `Distance_Length_of_Fiber_in_Meter`, "
 				+ "`SACFA_Number`, `STATUS`, `SR_DATE`, `TAB_NAME`, `Customer_Site_Name`, "
 				+ "`Circle`, `CircleCode`)";
@@ -2042,7 +2076,6 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 				+ "'"+reqEquip.getMW_Antenna()+"', '"+reqEquip.getOther_Nodes()+"', '"+reqEquip.getRadio_Antenna()+"', '"+reqEquip.getStrategic_Conversion()+"', "
 				+ "'"+reqEquip.getTower_Mounted_Booster()+"', '"+reqEquip.getMW_IDU()+"', '"+reqEquip.getPole()+"', '"+reqEquip.getHubTag_Untag()+"', '"+reqEquip.getOther_Equipment()+"', '"+global.getRequest_for_Network_Type()+"', "
 				+ "'"+global.getProject_Name()+"', "
-				+ "'"+otherEquipment.getOther_Equipment()+"', "
 				+ "'"+fbp.getIs_Fiber_Node_Provisioning_Required()+"', "+fbp.getNo_of_Pairs()+", "+fbp.getDistance_Length_of_Fiber_in_Meter()+", "
 				+ "'"+sacfa.getSACFA_Number()+"', 'NB01', curdate(), '"+Constant.Site_Upgrade+"', '"+siteObj.getSiteName()+"', "
 				+ "'"+siteObj.getCircle()+"', '"+siteObj.getCircle()+"') ";
@@ -2261,6 +2294,23 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 				}
 			}
 			
+			// Other Equipment
+			List<com.tvi.upgrade.dto.OtherEquipmentDto> otherEquipment = srRequestJson.getOther_Equipment();
+			sql = "INSERT INTO `Airtel_Other_Equipment`(`SR_Number`, `Type_No`, `Action`, `Source_Request_RefNo`, "
+					+ "`Other_Equipment_Category`, `Other_Equipment_Type`, `Equipment_to_be_relocated`, "
+					+ "`Target_Indus_Site_Id`, `Target_Request_RefNo`)";
+			sql += " VALUES ";
+			typeNo = 1;
+			for(com.tvi.upgrade.dto.OtherEquipmentDto otEq : otherEquipment){
+				String dataSql = "('"+srNumber+"', "+typeNo+", '"+otEq.getAction()+"', '"+otEq.getSource_Request_RefNo()+"', '"+otEq.getOther_Equipment_Category()+"', '"+otEq.getOther_Equipment_Type()+"', "
+						+ "'"+otEq.getEquipment_to_be_relocated()+"', '"+otEq.getTarget_Indus_Site_Id()+"', '"+otEq.getTarget_Request_RefNo()+"')";
+				
+				int exe = getEm().createNativeQuery(sql + dataSql).executeUpdate();
+				if(exe != 0){
+					typeNo++;
+				}
+			}
+			
 			totalRatedPowerInWatt = totalRatedPowerInKW * 1000;
 			String updatePowerRating = "UPDATE `Airtel_SR` set `Total_Rated_Power_In_KW` = "+totalRatedPowerInKW+", "
 			+ "`Total_Rated_Power_In_Watt` = "+totalRatedPowerInWatt+" where `SR_Number` = '"+srNumber+"' ";
@@ -2328,68 +2378,56 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 		String srNumber = jsonData.getSR_No();
 		if(accRej.equalsIgnoreCase("Accept")){
 			if(srNumber.indexOf("NB_")>-1){
-				st += ",`Status` = 'NB18', `RFI_ACCEPTED_DATE` = curdate()";
+//				st += ",`Status` = 'NB18', `RFI_ACCEPTED_DATE` = curdate()";
 				auditStatus = "NB18";
 				tabName = Constant.CreateNBS;
 			}
 			else if(srNumber.indexOf("HPSC_")>-1){
-				st += ",`Status` = 'NB18', `RFI_ACCEPTED_DATE` = curdate()";
+//				st += ",`Status` = 'NB18', `RFI_ACCEPTED_DATE` = curdate()";
 				auditStatus = "NB18";
 				tabName = Constant.HPSC;
 			}
 			else if(srNumber.indexOf("SH_")>-1 || srNumber.indexOf("NT_")>-1){
-				st += ",`Status` = 'NB09', `RFI_ACCEPTED_DATE` = curdate()";
+//				st += ",`Status` = 'NB09', `RFI_ACCEPTED_DATE` = curdate()";
 				auditStatus = "NB09";
 				tabName = Constant.New_Tenency;
 			}
 			else if(srNumber.indexOf("SU_")>-1 || srNumber.indexOf("UP_")>-1){
-				st += ",`Status` = 'NB07', `RFI_ACCEPTED_DATE` = curdate()";
+//				st += ",`Status` = 'NB07', `RFI_ACCEPTED_DATE` = curdate()";
 				auditStatus = "NB07";
 				tabName = Constant.Site_Upgrade;
 			}
-			
+			st += ",`Status` = '"+auditStatus+"', `RFI_ACCEPTED_DATE` = curdate()";
 		}
 		else{
 			if(srNumber.indexOf("NB_")>-1){
-//				st += ", `Status` = 'NB17'";
-				st += ", `Status` = 'NB108'";
-				auditStatus = "NB108";
+//				auditStatus = "NB108";
+				auditStatus = "RNB15";
 				tabName = Constant.CreateNBS;
 			}
 			else if(srNumber.indexOf("HPSC_")>-1){
-//				st += ", `Status` = 'NB17'";
-				st += ", `Status` = 'NB108'";
-				auditStatus = "NB108";
+//				auditStatus = "NB108";
+				auditStatus = "RNB15";
 				tabName = Constant.HPSC;
 			}
 			else if(srNumber.indexOf("SH_")>-1 || srNumber.indexOf("NT_")>-1){
-//				st += ", `Status` = 'NB08'";
-				st += ", `Status` = 'NB108'";
-				auditStatus = "NB108";
+//				auditStatus = "NB108";
+				auditStatus = "RNB06";
 				tabName = Constant.New_Tenency;
 			}
 			else if(srNumber.indexOf("SU_")>-1 || srNumber.indexOf("UP_")>-1){
-//				st += ", `Status` = 'NB06'";
-				st += ", `Status` = 'NB108'";
-				auditStatus = "NB108";
+//				auditStatus = "NB108";
+				auditStatus = "RNB04";
 				tabName = Constant.Site_Upgrade;
 			}
-			st += ", `RFI_DATE` = null, `RFI_ACCEPTED_DATE` = null, `Tower_Completion` = null, "
+			st += ", `Status`='"+auditStatus+"', `RFI_DATE` = null, `RFI_ACCEPTED_DATE` = null, `Tower_Completion` = null, "
 					+ "`Shelter_Equipment_RoomReady` = null, `AirConditioner_Commissioned` = null, "
 					+ "`DG_Commissioned` = null, `Acceptance_Testing_Of_Site_Infrastructure_Completed_Status` = null, "
 					+ "`EB_Status` = null, `Created_By` = null, `OFC_Duct_Laying_Done` = null, "
 					+ "`Access_To_Site_Available_Status` = null, `Engineer_Name` = null, `Engineer_Phone_Number` = null, "
-					+ "`Notice_Form_Generation_Date` = null";
+					+ "`Notice_Form_Generation_Date` = null";		
+			
 		}
-		/*String sql = "UPDATE `Airtel_SR` set `RFI_Accept_Reject` = ?, `RFI_Reject_Remarks` = ?, "
-				+ "`RFI_Reject_Remarks_Others` = ? "+st+" where `SR_Number` = ? and `TOCO_Site_Id` = ?";
-		int exe = getEm().createNativeQuery(sql)
-				.setParameter(1, accRej)
-				.setParameter(2, jsonData.getReject_Remarks())
-				.setParameter(3, jsonData.getReject_Remarks_Others())
-				.setParameter(4, jsonData.getSR_No())
-				.setParameter(5, jsonData.getTOCO_Site_ID())
-				.executeUpdate();*/
 		String sql = "UPDATE `Airtel_SR` set `RFI_Accept_Reject` = ?, `RFI_Reject_Remarks` = ?, "
 				+ "`RFI_Reject_Remarks_Others` = ? "+st+" where `SR_Number` = ?";
 		int exe = getEm().createNativeQuery(sql)
@@ -2545,6 +2583,139 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 		String spNumber = jsonData.getSP_Ref_No();
 		String tabName = "NA";
 		String accRej = jsonData.getAccept_Reject();
+		String status = "";
+		if(spNumber.indexOf("NB_")>-1){
+			tabName = Constant.CreateNBS;
+			if(accRej.equalsIgnoreCase("Accept")){
+				status = "NB10";
+			}
+			else{
+				status = "NB110";
+			}
+		}
+		else if(spNumber.indexOf("HPSC_")>-1){
+			tabName = Constant.HPSC;
+			if(accRej.equalsIgnoreCase("Accept")){
+				status = "NB10";
+			}
+			else{
+				status = "NB110";
+			}
+		}
+		else if(spNumber.indexOf("SH_")>-1 || spNumber.indexOf("NT_")>-1){
+			tabName = Constant.New_Tenency;
+			if(accRej.equalsIgnoreCase("Accept")){
+				status = "NB05";
+			}
+			else{
+				status = "NB110";
+			}
+		}
+		else if(spNumber.indexOf("SU_")>-1 || spNumber.indexOf("UP_")>-1){
+			tabName = Constant.Site_Upgrade;
+			if(accRej.equalsIgnoreCase("Accept")){
+				status = "NB03";
+			}
+			else{
+				status = "NB110";
+			}
+		}
+		
+		String sql = "UPDATE `Airtel_SR` set `Financial_Site_Id` = ?, `Expected_monthly_Rent_Approved` = ?, "
+				+ "`CAPEX_Amount_Approved` = ?, `OPEX_Amount_Approved` = ?, `Tentative_Billing_Amount_Approved` = ?,"
+				+ "`Target_Date` = ?, `Date` = ?, `SO_Number` = ?, `Tenure_In_Years` = ?, `SO_DATE` = curdate(), "
+				+ "`SO_Accept_Reject` = ?, `STATUS`='"+status+"'  "
+				+ "where `SP_Number` = ?";
+		if(status.equalsIgnoreCase("NB110")){
+			sql = "UPDATE `Airtel_SR` set `Financial_Site_Id` = ?, `Expected_monthly_Rent_Approved` = ?, "
+					+ "`CAPEX_Amount_Approved` = ?, `OPEX_Amount_Approved` = ?, `Tentative_Billing_Amount_Approved` = ?,"
+					+ "`Target_Date` = ?, `Date` = ?, `SO_Number` = ?, `Tenure_In_Years` = ?, "
+					+ "`SO_Accept_Reject` = ?, `STATUS`='"+status+"' "
+					+ "where `SP_Number` = ?";
+		}
+		int exe = getEm().createNativeQuery(sql)
+				.setParameter(1, jsonData.getFinancial_Site_Id())
+				.setParameter(2, jsonData.getExpected_monthly_Rent_Approved())
+				.setParameter(3, jsonData.getCAPEX_Amount_Approved())
+				.setParameter(4, jsonData.getOPEX_Amount_Approved())
+				.setParameter(5, jsonData.getTentative_Billing_Amount_Approved())
+				.setParameter(6, jsonData.getTarget_Date())
+				.setParameter(7, jsonData.getDate())
+				.setParameter(8, jsonData.getCustomer_SO_No())
+				.setParameter(9, jsonData.getTenure_In_Years())
+				.setParameter(10, accRej)
+				.setParameter(11, spNumber)
+				.executeUpdate();
+		if(exe != 0){
+			sql = "SELECT `SR_Number`, `SO_Number`, `CircleCode`  FROM `Airtel_SR` where `SP_Number` = '"+spNumber+"'";
+			List<Object[]> dataList = getAllTableData(sql);
+			if(dataList.size() !=0){
+				Object [] obj = dataList.get(0);
+				String srNumber =  String.valueOf(obj[0]);
+				String soNumber = String.valueOf(obj[1]);
+				String circleCode =  String.valueOf(obj[2]);
+				String insAudSql = "INSERT INTO `Airtel_SR_Audit`(`SR_NUMBER`, `EMP_ID`, `ACTION`, `REMARK`) "
+						+ "VALUES "
+						+ "('"+srNumber+"', '"+circleCode+"', '"+status+"', 'SO "+accRej+"')";
+				int i = getEm().createNativeQuery(insAudSql).executeUpdate();
+				if(i != 0){
+					jsonData.setSrNumber(srNumber);
+					jsonData.setSpNumber(spNumber);
+					jsonData.setSoNumber(soNumber);
+					jsonData.setStatus(status);
+					jsonData.setCircle(circleCode);
+					jsonData.setTabName(tabName);
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void insertHdrAndDetAF(SaveNBSRequest jsonData) {
+		
+		String hdrTable = "INSERT INTO `NBS_MASTER_HDR` (`SR_NUMBER`, `Operator`, `SR_DATE`, `CIRCLE_NAME`, `TAB_NAME`, `TVI_SITE_ID`, `Site_Name`, `AIRTEL_SITE_ID`, `LATITUDE_1`, `LONGITUDE_1`, `AGL_REQUIRED`, "
+				+ "`SITE_ADDRESS`, `DISTRICT`, `STATE`, `CLUTTER`, `SITE_TYPE`, "
+				+ "`NO_OF_RF_ANTENNA`, `Total_Rated_Power_in_KW`, `REMARK`, `STATUS`, `CREATE_BY`, `CREATE_DATE`) ";
+		
+		String srNumber = jsonData.getSrNumber();
+		String hdrValue = "VALUES ('"+srNumber+"', '"+jsonData.getOperator()+"', CURRENT_TIMESTAMP, '"+jsonData.getCircleName()+"', '"+jsonData.getCurrentTab()+"', '"+jsonData.getTviSiteId()+"', ?, '"+jsonData.getAirtelSiteId()+"', "+jsonData.getLatitude1()+", "+jsonData.getLongitude1()+", "+jsonData.getAglRequired()+", "
+				+ "?, '"+jsonData.getDistrict()+"', '"+jsonData.getState()+"', '"+jsonData.getClutter()+"', '"+jsonData.getSiteType()+"', "
+				+ ""+jsonData.getNoOfAirFiber()+", "+jsonData.getTotalRatedPower()+", ?, 'NB01', '"+jsonData.getLoginEmpId()+"' , CURRENT_TIMESTAMP) ";
+		getEm().createNativeQuery(hdrTable + hdrValue)
+		.setParameter(1, jsonData.getSiteName())
+		.setParameter(2, jsonData.getSiteAddress())
+		.setParameter(3, jsonData.getRemark()).
+		executeUpdate();
+		
+		if(jsonData.getNoOfAirFiber() != null && jsonData.getNoOfAirFiber() != 0){
+			String detTable = "INSERT INTO `NBS_MASTER_DET` (`SR_NUMBER`, `Type_No`, `TYPE`, `AF_Make`, "
+					+ "`AF_Model`, `AF_Dimensions`, `AF_Weight`, `AF_Band`, `AF_Technology`, `AF_Load`, `AF_Mcb`,"
+					+ "`AF_EquipPlace`, `CREATE_DATE`) ";
+			
+			List<AirFiberRequest> dataList = jsonData.getAirFiberList();
+			String detValue = "";
+			int i = 0;
+			for(AirFiberRequest r : dataList){
+				detValue += "('"+srNumber+"', "+r.getId()+", '"+Constant.Air_Fiber+"', '"+r.getMake()+"', "
+						+ "'"+r.getModel()+"', '"+r.getDimensions()+"', "+r.getWeight()+", '"+r.getBand()+"', '"+r.getTechnology()+"', "
+						+ ""+r.getLoad()+", '"+r.getMcb()+"', '"+r.getEquipPlacement()+"',  CURRENT_TIMESTAMP)";
+				if(i != dataList.size()-1){
+					detValue += ",";
+				}
+				i++;
+			}
+			if(!detValue.equalsIgnoreCase(""))
+				getEm().createNativeQuery(detTable + " VALUES " + detValue).executeUpdate();
+		}
+	}
+	
+	/*@Override
+	public boolean soSubmit(SoSubmitDto jsonData) {
+		String spNumber = jsonData.getSP_Ref_No();
+		String tabName = "NA";
+		String accRej = jsonData.getAccept_Reject();
 		String st = "";
 		String auditStatus = "";
 		if(spNumber.indexOf("NB_")>-1){
@@ -2618,6 +2789,6 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 			return true;
 		}
 		return false;
-	}
+	}*/
 
 }

@@ -8,7 +8,7 @@ public class SendSMS {
 	
 	public static int sendSms(String message, String toMobile){
 		int responseCode = 0;
-		String apiKey = "ae6fa4-5cab56-4bc26d-caa56f-b27aab";
+		String apiKey = "[sms_api_key]";
 		String senderId = "TRIAPP";
 		String messageType = "TXT";
 		try{
