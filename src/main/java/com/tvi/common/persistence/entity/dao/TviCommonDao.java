@@ -51,17 +51,9 @@ public interface TviCommonDao {
 
 	void insertHdrAndDetOfODSCAnchor(SaveNBSRequest jsonData);
 
-	//void insertHdrAndDetOfCOW(SaveNBSRequest jsonData);
-
 	List<Object[]> getTVISiteIdCircleName(String sql);
 
-	//void insertHdrAndDetSharing(SaveNBSRequest jsonData);
-
 	void insertHdrAndDetODSCSharing(SaveNBSRequest jsonData);
-
-	//void insertHdrAndDetODCSmartSplitSharing(SaveNBSRequest jsonData);
-
-	//void insertHdrAndDetMassiveMIMOSharing(SaveNBSRequest jsonData);
 
 	int updateBulkdataValue(String updateTable);
 

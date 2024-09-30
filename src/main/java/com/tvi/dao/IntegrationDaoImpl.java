@@ -372,7 +372,22 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	public SrSoWindrawalResponse srSoWithdrawal(SrSoWithdrawalDto jsonData) {
 		SrSoWindrawalResponse response = new SrSoWindrawalResponse();
 		try {
-			if(tviCommonDao.srSoWithdrawal(jsonData)){
+			String srNumber = jsonData.getSR_No();
+			String sql = "SELECT `SR_Number`, `Withdrawal_Type` FROM `Airtel_SR` where `SR_Number` like '"+srNumber+"'";
+			List<Object[]> dataList = tviCommonDao.getAllTableData(sql);
+			String withType = "";
+			boolean isAlreadyDone = false;
+			for(Object [] dataObj : dataList){
+				withType = dataObj[1] == null ? "" : emptyString(dataObj[1]);
+				if(!withType.equalsIgnoreCase("")){
+					isAlreadyDone = true;
+				}
+			}
+			if(isAlreadyDone){
+				response.setStatus("FAIL");
+				response.setResponse_Message("Already "+withType);
+			}
+			else if(tviCommonDao.srSoWithdrawal(jsonData)){
 				response.setStatus("SUCCESS");
 				response.setResponse_Message(jsonData.getWithdrawal_Type()+" Successfully");
 			}
@@ -382,10 +397,11 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			}
 			response.setRequest_Ref_No(jsonData.getSR_No());
 			
-			Map<String, String> errorsMap = new HashMap<String, String>();
-			prepareForSendMail(jsonData.getSrNumber(), jsonData.getSpNumber(), jsonData.getSoNumber(), 
-					jsonData.getCircle(), Constant.Airtel, jsonData.getStatus(), jsonData.getTabName(), errorsMap);
-			
+			if(!isAlreadyDone){
+				Map<String, String> errorsMap = new HashMap<String, String>();
+				prepareForSendMail(jsonData.getSrNumber(), jsonData.getSpNumber(), jsonData.getSoNumber(), 
+						jsonData.getCircle(), Constant.Airtel, jsonData.getStatus(), jsonData.getTabName(), errorsMap);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -397,7 +413,22 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	public RfaiAcceptRejectResponse rfaiAcceptReject(RfaiAcceptReject jsonData) {
 		RfaiAcceptRejectResponse response = new RfaiAcceptRejectResponse();
 		try {
-			if(tviCommonDao.rfaiAcceptReject(jsonData)){
+			String srNumber = jsonData.getSR_No();
+			String sql = "SELECT `SR_Number`, `RFI_Accept_Reject` FROM `Airtel_SR` where `SR_Number` like '"+srNumber+"'";
+			List<Object[]> dataList = tviCommonDao.getAllTableData(sql);
+			String accRej = "";
+			boolean isAlreadyDone = false;
+			for(Object [] dataObj : dataList){
+				accRej = dataObj[1] == null ? "" : emptyString(dataObj[1]);
+				if(!accRej.equalsIgnoreCase("")){
+					isAlreadyDone = true;
+				}
+			}
+			if(isAlreadyDone){
+				response.setStatus("FAIL");
+				response.setRespose_Message("RFAI already "+accRej+" of "+srNumber);
+			}
+			else if(tviCommonDao.rfaiAcceptReject(jsonData)){
 				response.setStatus("SUCCESS");
 				if(jsonData.getAccept_Reject().equalsIgnoreCase("Accept"))
 					response.setRespose_Message("RFAI Successfully Accepted");
@@ -410,9 +441,11 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			}
 			response.setSR_No(jsonData.getSR_No());
 			
-			Map<String, String> errorsMap = new HashMap<String, String>();
-			prepareForSendMail(jsonData.getSrNumber(), jsonData.getSpNumber(), jsonData.getSoNumber(), 
-					jsonData.getCircle(), Constant.Airtel, jsonData.getStatus(), jsonData.getTabName(), errorsMap);
+			if(!isAlreadyDone){
+				Map<String, String> errorsMap = new HashMap<String, String>();
+				prepareForSendMail(jsonData.getSrNumber(), jsonData.getSpNumber(), jsonData.getSoNumber(), 
+						jsonData.getCircle(), Constant.Airtel, jsonData.getStatus(), jsonData.getTabName(), errorsMap);
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -425,7 +458,22 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	public RejectSpResponse rejectSp(RejectSpDto jsonData) {
 		RejectSpResponse response = new RejectSpResponse();
 		try {
-			if(tviCommonDao.rejectSp(jsonData)){
+			String srNumber = jsonData.getSR_No();
+			String sql = "SELECT `SR_Number`, `Accept_Reject` FROM `Airtel_SR` where `SR_Number` = '"+srNumber+"'";
+			List<Object[]> dataList = tviCommonDao.getAllTableData(sql);
+			String accRej = "";
+			boolean isAlreadyDone = false;
+			for(Object [] dataObj : dataList){
+				accRej = dataObj[1] == null ? "" : emptyString(dataObj[1]);
+				if(!accRej.equalsIgnoreCase("")){
+					isAlreadyDone = true;
+				}
+			}
+			if(isAlreadyDone){
+				response.setStatus("FAIL");
+				response.setResponse_Message("SP already "+accRej+" of "+srNumber);
+			}
+			else if(tviCommonDao.rejectSp(jsonData)){
 				response.setStatus("SUCCESS");
 				if(jsonData.getAccept_Reject().equalsIgnoreCase("Accept"))
 					response.setResponse_Message("SP Successfully Accepted");
@@ -438,9 +486,11 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			}
 			response.setSR_No(jsonData.getSR_No());
 			
-			Map<String, String> errorsMap = new HashMap<String, String>();
-			prepareForSendMail(jsonData.getSrNumber(), jsonData.getSpNumber(), jsonData.getSoNumber(), 
-					jsonData.getCircle(), Constant.Airtel, jsonData.getStatus(), jsonData.getTabName(), errorsMap);
+			if(!isAlreadyDone){
+				Map<String, String> errorsMap = new HashMap<String, String>();
+				prepareForSendMail(jsonData.getSrNumber(), jsonData.getSpNumber(), jsonData.getSoNumber(), 
+						jsonData.getCircle(), Constant.Airtel, jsonData.getStatus(), jsonData.getTabName(), errorsMap);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -452,17 +502,36 @@ public class IntegrationDaoImpl implements IntegrationDao{
 	public SoSubmitResponse soSubmit(SoSubmitDto jsonData) {
 		SoSubmitResponse response = new SoSubmitResponse();
 		try {
-			if(tviCommonDao.soSubmit(jsonData)){
+			String spNumber = jsonData.getSP_Ref_No();
+			String sql = "SELECT `SP_Number`, `SO_Accept_Reject` FROM `Airtel_SR` where `SP_Number` = '"+spNumber+"'";
+			List<Object[]> dataList = tviCommonDao.getAllTableData(sql);
+			String accRej = "";
+			boolean isAlreadyDone = false;
+			for(Object [] dataObj : dataList){
+				accRej = dataObj[1] == null ? "" : emptyString(dataObj[1]);
+				if(!accRej.equalsIgnoreCase("")){
+					isAlreadyDone = true;
+				}
+			}
+			if(isAlreadyDone){
+				response.setStatus("FAIL");
+				response.setResponse_Message("SO already "+accRej+" of "+spNumber);
+			}
+			else if(tviCommonDao.soSubmit(jsonData)){
 				response.setStatus("SUCCESS");
+				response.setResponse_Message("SO "+jsonData.getAccept_Reject());
 			}
 			else{
 				response.setStatus("FAIL");
+				response.setResponse_Message("SO "+jsonData.getAccept_Reject());
 			}
 			response.setAcceptReject(jsonData.getAccept_Reject());
 			
-			Map<String, String> errorsMap = new HashMap<String, String>();
-			prepareForSendMail(jsonData.getSrNumber(), jsonData.getSpNumber(), jsonData.getSoNumber(), 
-					jsonData.getCircle(), Constant.Airtel, jsonData.getStatus(), jsonData.getTabName(), errorsMap);
+			if(!isAlreadyDone){
+				Map<String, String> errorsMap = new HashMap<String, String>();
+				prepareForSendMail(jsonData.getSrNumber(), jsonData.getSpNumber(), jsonData.getSoNumber(), 
+						jsonData.getCircle(), Constant.Airtel, jsonData.getStatus(), jsonData.getTabName(), errorsMap);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -566,8 +635,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				snr.setRfsDate(obj[8] == null ? "" : emptyString(obj[8]));
 				snr.setSiteAddress(obj[9] == null ? "" : emptyString(obj[9]));
 				snr.setSuggestedTowerType(obj[10] == null ? "" : emptyString(obj[10]));
-				snr.setLatitude1(obj[11] == null ? 0.0 : Double.valueOf(emptyString(obj[11])));
-				snr.setLongitude1(obj[12] == null ? 0.0 : Double.valueOf(emptyString(obj[12])));
+				snr.setLatitude1(obj[11] == null ? 0.0 : Double.parseDouble(emptyNumeric(obj[11])));
+				snr.setLongitude1(obj[12] == null ? 0.0 : Double.parseDouble(emptyNumeric(obj[12])));
 				snr.setSuggestedLandOwnerRent(obj[13] == null ? "" : emptyString(obj[13]));
 				snr.setTabName(emptyString(obj[14]));
 				snr.setStatus(emptyString(obj[15]));
@@ -577,8 +646,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				snr.setTviSiteId(obj[19] == null ? "" : emptyString(obj[19]));
 				snr.setAirtelSiteId(obj[20] == null ? "" : emptyString(obj[20]));
 				snr.setSiteName(obj[21] == null ? "" : emptyString(obj[21]));
-				snr.setSpLatitude(obj[22] == null ? 0.0 : Double.valueOf(emptyString(obj[22])));
-				snr.setSpLongitude(obj[23] == null ? 0.0 : Double.valueOf(emptyString(obj[23])));
+				snr.setSpLatitude(obj[22] == null ? 0.0 : Double.parseDouble(emptyNumeric(obj[22])));
+				snr.setSpLongitude(obj[23] == null ? 0.0 : Double.parseDouble(emptyNumeric(obj[23])));
 				snr.setOrgTabName(obj[24] == null ? "" : emptyString(obj[24]));
 				snr.setProjectName(obj[25] == null ? "" : emptyString(obj[25]));
 				snr.setUpgradeType(obj[26] == null ? "" : emptyString(obj[26]));
@@ -681,7 +750,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			OtherEquipmentDto classObj = null;
 			for(Object [] dataObj : dataList){
 				classObj = new OtherEquipmentDto();
-				classObj.setTypeNo(Integer.parseInt(emplyNumeric(dataObj[0])));
+				classObj.setTypeNo(Integer.parseInt(emptyNumeric(dataObj[0])));
 				classObj.setFeasibility(dataObj[1] == null ? "" : emptyString(dataObj[1]));
 				classObj.setAction(dataObj[2] == null ? "" : emptyString(dataObj[2]));
 				classObj.setSource_Request_RefNo(dataObj[3] == null ? "" : emptyString(dataObj[3]));
@@ -712,7 +781,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			TmaTmbDto classObj = null;
 			for(Object [] dataObj : dataList){
 				classObj = new TmaTmbDto();
-				classObj.setTypeNo(Integer.parseInt(emplyNumeric(dataObj[0])));
+				classObj.setTypeNo(Integer.parseInt(emptyNumeric(dataObj[0])));
 				classObj.setFeasibility(dataObj[1] == null ? "" : emptyString(dataObj[1]));
 				classObj.setAction(dataObj[2] == null ? "" : emptyString(dataObj[2]));
 				classObj.setSource(dataObj[3] == null ? "" : emptyString(dataObj[3]));
@@ -1029,20 +1098,20 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			FibreNodeDto classObj = null;
 			for(Object [] dataObj : dataList){
 				classObj = new FibreNodeDto();
-				classObj.setTypeNo(Integer.parseInt(emplyNumeric(dataObj[0])));
+				classObj.setTypeNo(Integer.parseInt(emptyNumeric(dataObj[0])));
 				classObj.setNode_Type(dataObj[1] == null ? "" : emptyString(dataObj[1]));
 				classObj.setNode_Location(dataObj[2] == null ? "" : emptyString(dataObj[2]));
 				classObj.setFeasibility(dataObj[3] == null ? "" : emptyString(dataObj[3]));
 				classObj.setNode_Manufacturer(dataObj[4] == null ? "" : emptyString(dataObj[4]));
 				classObj.setNode_Model(dataObj[5] == null ? "" : emptyString(dataObj[5]));
-				classObj.setLength_Mtrs(dataObj[6] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[6])));
-				classObj.setBreadth_Mtrs(dataObj[7] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[7])));
-				classObj.setHeight_Mtrs(dataObj[8] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[8])));
-				classObj.setWeight_Kg(dataObj[9] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[9])));
+				classObj.setLength_Mtrs(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				classObj.setBreadth_Mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				classObj.setHeight_Mtrs(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
+				classObj.setWeight_Kg(dataObj[9] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[9])));
 				classObj.setNode_Voltage(dataObj[10] == null ? "" : emptyString(dataObj[10]));
-				classObj.setPower_Rating_in_Kw(dataObj[11] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[11])));
+				classObj.setPower_Rating_in_Kw(dataObj[11] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[11])));
 				classObj.setFullRack(dataObj[12] == null ? "" : emptyString(dataObj[12]));
-				classObj.setTx_Rack_Space_required_in_Us(dataObj[13] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[13])));
+				classObj.setTx_Rack_Space_required_in_Us(dataObj[13] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[13])));
 				classObj.setIs_Right_Of_Way_ROW_Required_Inside_The_TOCO_Premises(dataObj[14] == null ? "" : emptyString(dataObj[14]));
 				classObj.setType_Of_Fiber_Laying(dataObj[15] == null ? "" : emptyString(dataObj[15]));
 				classObj.setType_Of_FMS(dataObj[16] == null ? "" : emptyString(dataObj[16]));
@@ -1068,15 +1137,15 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			McbDto classObj = null;
 			for(Object [] dataObj : dataList){
 				classObj = new McbDto();
-				classObj.setTotal_No_of_MCB_Required(Double.valueOf(emplyNumeric(dataObj[0])));
-				classObj.set_06A(dataObj[1] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[1])));
-				classObj.set_10A(dataObj[2] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[2])));
-				classObj.set_16A(dataObj[3] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[3])));
-				classObj.set_24A(dataObj[4] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[4])));
-				classObj.set_32A(dataObj[5] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[5])));
-				classObj.set_40A(dataObj[6] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[6])));
-				classObj.set_63A(dataObj[7] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[7])));
-				classObj.set_80A(dataObj[8] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[8])));
+				classObj.setTotal_No_of_MCB_Required(Double.parseDouble(emptyNumeric(dataObj[0])));
+				classObj.set_06A(dataObj[1] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[1])));
+				classObj.set_10A(dataObj[2] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[2])));
+				classObj.set_16A(dataObj[3] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[3])));
+				classObj.set_24A(dataObj[4] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[4])));
+				classObj.set_32A(dataObj[5] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[5])));
+				classObj.set_40A(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				classObj.set_63A(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				classObj.set_80A(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
 				classObj.setFeasibility(dataObj[9] == null ? "" : emptyString(dataObj[9]));
 				MCB.add(classObj);
 			}
@@ -1099,20 +1168,20 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			OtherNodeDto classObj = null;
 			for(Object [] dataObj : dataList){
 				classObj = new OtherNodeDto();
-				classObj.setTypeNo(Integer.parseInt(emplyNumeric(dataObj[0])));
+				classObj.setTypeNo(Integer.parseInt(emptyNumeric(dataObj[0])));
 				classObj.setNode_Type(dataObj[1] == null ? "" : emptyString(dataObj[1]));
 				classObj.setNode_Location(dataObj[2] == null ? "" : emptyString(dataObj[2]));
 				classObj.setNode_Manufacturer(dataObj[3] == null ? "" : emptyString(dataObj[3]));
 				classObj.setFeasibility(dataObj[4] == null ? "" : emptyString(dataObj[4]));
 				classObj.setNode_Model(dataObj[5] == null ? "" : emptyString(dataObj[5]));
-				classObj.setLength_Mtrs(dataObj[6] == null ? 0 : Double.parseDouble(emptyString(dataObj[6])));
-				classObj.setBreadth_Mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyString(dataObj[7])));
-				classObj.setHeight_Mtrs(dataObj[8] == null ? 0 : Double.parseDouble(emptyString(dataObj[8])));
-				classObj.setWeight_Kg(dataObj[9] == null ? 0 : Double.parseDouble(emptyString(dataObj[9])));
+				classObj.setLength_Mtrs(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				classObj.setBreadth_Mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				classObj.setHeight_Mtrs(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
+				classObj.setWeight_Kg(dataObj[9] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[9])));
 				classObj.setNode_Voltage(dataObj[10] == null ? "" : emptyString(dataObj[10]));
-				classObj.setPower_Rating_in_Kw(dataObj[11] == null ? 0 : Double.parseDouble(emptyString(dataObj[11])));
+				classObj.setPower_Rating_in_Kw(dataObj[11] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[11])));
 				classObj.setFullRack(dataObj[12] == null ? "" : emptyString(dataObj[12]));
-				classObj.setTx_Rack_Space_Required_In_Us(dataObj[13] == null ? 0 : Double.parseDouble(emptyString(dataObj[13])));
+				classObj.setTx_Rack_Space_Required_In_Us(dataObj[13] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[13])));
 				classObj.setRemarks(emptyString(dataObj[14] == null ? "" : emptyString(dataObj[14])));
 				classObj.setAction(emptyString(dataObj[15] == null ? "" : emptyString(dataObj[15])));
 				String remark = dataObj[14] == null ? "" : emptyString(dataObj[14]);
@@ -1143,16 +1212,16 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			BscRncCabinetsDto classObj = null;
 			for(Object [] dataObj : dataList){
 				classObj = new BscRncCabinetsDto();
-				classObj.setTypeNo(Integer.parseInt(emplyNumeric(dataObj[0])));
+				classObj.setTypeNo(Integer.parseInt(emptyNumeric(dataObj[0])));
 				classObj.setNetWork_Type(dataObj[1] == null ? "" : emptyString(dataObj[1]));
 				classObj.setBSC_RNC_Type(dataObj[2] == null ? "" : emptyString(dataObj[2]));
 				classObj.setFeasibility(dataObj[3] == null ? "" : emptyString(dataObj[3]));
 				classObj.setBSC_RNC_Manufacturer(dataObj[4] == null ? "" : emptyString(dataObj[4]));
 				classObj.setBSC_RNC_Make(dataObj[5] == null ? "" : emptyString(dataObj[5]));
-				classObj.setLength_Mtrs(dataObj[6] == null ? 0 : Double.parseDouble(emptyString(dataObj[6])));
-				classObj.setBreadth_Mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyString(dataObj[7])));
-				classObj.setHeight_AGL(dataObj[8] == null ? 0 : Double.parseDouble(emptyString(dataObj[8])));
-				classObj.setBSC_RNC_Power_Rating(dataObj[9] == null ? 0 : Double.parseDouble(emptyString(dataObj[9])));
+				classObj.setLength_Mtrs(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				classObj.setBreadth_Mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				classObj.setHeight_AGL(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
+				classObj.setBSC_RNC_Power_Rating(dataObj[9] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[9])));
 				classObj.setAction(dataObj[10] == null ? "" : emptyString(dataObj[10]));
 				classList.add(classObj);
 			}
@@ -1173,12 +1242,12 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			MwAntennaDto classObj = null;
 			for(Object [] dataObj : dataList){
 				classObj = new MwAntennaDto();
-				classObj.setTypeNo(Integer.parseInt(emplyNumeric(dataObj[0])));
+				classObj.setTypeNo(Integer.parseInt(emptyNumeric(dataObj[0])));
 				classObj.setMWAntenna_i_WAN(dataObj[1] == null ? "" : emptyString(dataObj[1]));
-				classObj.setSize_of_MW(dataObj[2] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[2])));
+				classObj.setSize_of_MW(dataObj[2] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[2])));
 				classObj.setFeasibility(dataObj[3] == null ? "" : emptyString(dataObj[3]));
-				classObj.setHeight_in_Mtrs(dataObj[4] == null ? 0 : Double.parseDouble(emplyNumeric(dataObj[4])));
-				classObj.setAzimuth_Degree(dataObj[5] == null ? 0 : Double.parseDouble(emplyNumeric(dataObj[5])));
+				classObj.setHeight_in_Mtrs(dataObj[4] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[4])));
+				classObj.setAzimuth_Degree(dataObj[5] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[5])));
 				classObj.setAction(dataObj[6] == null ? "" : emptyString(dataObj[6]));
 				classList.add(classObj);
 			}
@@ -1199,14 +1268,14 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			RadioAntennaDto classObj = null;
 			for(Object [] dataObj : dataList){
 				classObj = new RadioAntennaDto();
-				classObj.setTypeNo(Integer.parseInt(emplyNumeric(dataObj[0])));
+				classObj.setTypeNo(Integer.parseInt(emptyNumeric(dataObj[0])));
 				classObj.setRadioAntenna_i_WAN(dataObj[1] == null ? "" : emptyString(dataObj[1]));
-				classObj.setHeight_AGL_m(dataObj[2] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[2])));
+				classObj.setHeight_AGL_m(dataObj[2] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[2])));
 				classObj.setFeasibility(dataObj[3] == null ? "" : emptyString(dataObj[3]));
-				classObj.setAzimuth_Degree(dataObj[4] == null ? 0 : Double.parseDouble(emplyNumeric(dataObj[4])));
-				classObj.setLength_m(dataObj[5] == null ? 0 : Double.parseDouble(emplyNumeric(dataObj[5])));
-				classObj.setWidth_m(dataObj[6] == null ? 0 : Double.parseDouble(emplyNumeric(dataObj[6])));
-				classObj.setDepth_m(dataObj[7] == null ? 0 : Double.parseDouble(emplyNumeric(dataObj[7])));
+				classObj.setAzimuth_Degree(dataObj[4] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[4])));
+				classObj.setLength_m(dataObj[5] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[5])));
+				classObj.setWidth_m(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				classObj.setDepth_m(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
 				classObj.setNo_of_Ports(dataObj[8] == null ? "" : emptyString(dataObj[8]));
 				classObj.setRadioAntenna_Type(dataObj[9] == null ? "" : emptyString(dataObj[9]));
 				String bandFreq = dataObj[10] == null ? "" : emptyString(dataObj[10]);
@@ -1239,27 +1308,27 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			BtsCabinetDto classObj = null;
 			for(Object [] dataObj : dataList){
 				classObj = new BtsCabinetDto();
-				classObj.setTypeNo(Integer.parseInt(emplyNumeric(dataObj[0])));
+				classObj.setTypeNo(Integer.parseInt(emptyNumeric(dataObj[0])));
 				classObj.setNetWork_Type(dataObj[1] == null ? "" : emptyString(dataObj[1]));
 				classObj.setBTS_Type(dataObj[2] == null ? "" : emptyString(dataObj[2]));
 				classObj.setFeasibility(dataObj[3] == null ? "" : emptyString(dataObj[3]));
 				classObj.setBand(dataObj[4] == null ? "" : emptyString(dataObj[4]));
 				classObj.setManufacturer(dataObj[5] == null ? "" : emptyString(dataObj[5]));
 				classObj.setMake_of_BTS(dataObj[6] == null ? "" : emptyString(dataObj[6]));
-				classObj.setLength_Mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyString(dataObj[7])));
-				classObj.setWidth_Mtrs(dataObj[8] == null ? 0 : Double.parseDouble(emptyString(dataObj[8])));
-				classObj.setHeight_Mtrs(dataObj[9] == null ? 0 : Double.parseDouble(emptyString(dataObj[9])));
-				classObj.setBTS_Power_Rating_KW(dataObj[10] == null ? 0 : Double.parseDouble(emptyString(dataObj[10])));
+				classObj.setLength_Mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				classObj.setWidth_Mtrs(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
+				classObj.setHeight_Mtrs(dataObj[9] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[9])));
+				classObj.setBTS_Power_Rating_KW(dataObj[10] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[10])));
 				classObj.setBTS_Location(dataObj[11] == null ? "" : emptyString(dataObj[11]));
 				classObj.setBTS_Voltage(dataObj[12] == null ? "" : emptyString(dataObj[12]));
 				classObj.setMain_Unit_incase_of_TT_Split_Version(dataObj[13] == null ? "" : emptyString(dataObj[13]));
-				classObj.setSpace_Occupied_in_Us_incase_of_TT_Split_Version(dataObj[14] == null ? 0 : Double.parseDouble(emptyString(dataObj[14])));
+				classObj.setSpace_Occupied_in_Us_incase_of_TT_Split_Version(dataObj[14] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[14])));
 				classObj.setRRU_Unit(dataObj[15] == null ? "" : emptyString(dataObj[15]));
-				classObj.setNo_of_RRU_Units_incase_of_TT_Split_Version(dataObj[16] == null ? 0 : Double.parseDouble(emptyString(dataObj[16])));
-				classObj.setCombined_wt_of_RRU_Unit_incase_of_TT_Split_Version(dataObj[17] == null ? 0 : Double.parseDouble(emptyString(dataObj[17])));
-				classObj.setAGL_of_RRU_unit_in_M(dataObj[18] == null ? 0 : Double.parseDouble(emptyString(dataObj[18])));
-				classObj.setWeight_of_BTS_including_TMA_TMB_Kg(dataObj[19] == null ? 0 : Double.parseDouble(emptyString(dataObj[19])));
-				classObj.setBillable_Weigtht(dataObj[20] == null ? 0 : Double.parseDouble(emptyString(dataObj[20])));
+				classObj.setNo_of_RRU_Units_incase_of_TT_Split_Version(dataObj[16] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[16])));
+				classObj.setCombined_wt_of_RRU_Unit_incase_of_TT_Split_Version(dataObj[17] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[17])));
+				classObj.setAGL_of_RRU_unit_in_M(dataObj[18] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[18])));
+				classObj.setWeight_of_BTS_including_TMA_TMB_Kg(dataObj[19] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[19])));
+				classObj.setBillable_Weigtht(dataObj[20] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[20])));
 				classObj.setAction(dataObj[21] == null ? "" : emptyString(dataObj[21]));
 				String btsType = dataObj[2] == null ? "" : emptyString(dataObj[2]);
 				if(btsType.equalsIgnoreCase("Towertop")){
@@ -2246,17 +2315,6 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			if(!status){
 				String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"' where `SR_Number` = '"+srNumber+"'";
 				tviCommonDao.updateBulkdataValue(upSql);
-				
-				/*String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"', `Additional_Charge` = null, "
-						+ "`Infra_Details` = null, `Site_Classification` = null, `Expected_Rent_to_Landlord` = null, "
-						+ "`Non_Refundable_Deposit` = null, `Estimated_Deployment_Time__in_days_` = null, "
-						+ "`Additional_Capex` = null, `Standard_Rates` = null, `Fiber_Charges` = null, "
-						+ "`Rental_Threshold` = null, `Excess_Rent_beyond_Threshold` = null, "
-						+ "`Tentative_Rental_Premium` = null, `Additional_Rent` = null, "
-						+ "`IPFee` = null, `Field_Operation_Charges` = null, `Security_Guard_Charges` = null, "
-						+ "`Mobilization_Charges` = null, `Erection_Charges` = null, `Battery_backup_Hrs` = null, "
-						+ "`Land_Lord_Charges_or_Rent_Charges` = null, "
-						+ "`Recommended_Product_Type_by_Acquisition` = null where `SR_Number` = '"+srNumber+"'";*/
 			}
 			
 			Clob requestJson = new SerialClob(CommonFunction.printResponseJson(json).toCharArray());
@@ -2336,9 +2394,9 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				SPDetails_NN.setBattery_backup_Hrs(dataObj[36] == null ? "" : emptyString(dataObj[36]));
 				SPDetails_NN.setLand_Lord_Charges_or_Rent_Charges(dataObj[37] == null ? "" : emptyString(dataObj[37]));
 				SPDetails_NN.setWind_Speed(dataObj[38] == null ? "" : emptyString(dataObj[38]));
-				SPDetails_NN.setTowerHeight(dataObj[39] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[39])));
-				SPDetails_NN.setAgl(dataObj[40] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[40])));
-				SPDetails_NN.setDistance_from_P1_Lat_Long_in_meter(dataObj[41] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[41])));
+				SPDetails_NN.setTowerHeight(dataObj[39] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[39])));
+				SPDetails_NN.setAgl(dataObj[40] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[40])));
+				SPDetails_NN.setDistance_from_P1_Lat_Long_in_meter(dataObj[41] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[41])));
 				circle = emptyString(dataObj[42]);
 				networkType = emptyString(dataObj[43]);
 				SPDetails_NN.setRemarks(dataObj[44] == null ? "" : emptyString(dataObj[44]));
@@ -2384,12 +2442,12 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				radioAnt.setFeasibility(emptyString(dataObj[0]));
 				radioAnt.setRadioAntenna_i_WAN(emptyString(dataObj[1]));
 				radioAnt.setRadioAntenna_Type(emptyString(dataObj[2]));
-				radioAnt.setHeight_AGL_m(Double.parseDouble(emptyString(dataObj[3])));
-				radioAnt.setLength_m(Double.parseDouble(emptyString(dataObj[4])));
-				radioAnt.setWidth_m(Double.parseDouble(emptyString(dataObj[5])));
-				radioAnt.setDepth_m(Double.parseDouble(emptyString(dataObj[6])));
+				radioAnt.setHeight_AGL_m(dataObj[3] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[3])));
+				radioAnt.setLength_m(dataObj[4] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[4])));
+				radioAnt.setWidth_m(dataObj[5] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[5])));
+				radioAnt.setDepth_m(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
 				radioAnt.setNo_of_Ports(emptyString(dataObj[7]));
-				radioAnt.setAzimuth_Degree(Double.parseDouble(emptyString(dataObj[8])));
+				radioAnt.setAzimuth_Degree(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
 				String freq = emptyString(dataObj[9]);
 				String freqSplit [] = freq.split(",");
 				BandFrequencyMHzDto bandFreq = new BandFrequencyMHzDto();
@@ -2426,10 +2484,10 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				mwObj.setCustomer_Punched_Or_Planning("Planning");
 				mwObj.setSector_Details("Sector 1");
 				mwObj.setFeasibility(emptyString(dataObj[0]));
-				mwObj.setHeight_in_Mtrs(Double.parseDouble(emptyString(dataObj[1])));
+				mwObj.setHeight_in_Mtrs(dataObj[1] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[1])));
 				mwObj.setMWAntenna_i_WAN(emptyString(dataObj[2]));
-				mwObj.setSize_of_MW(Double.parseDouble(emptyString(dataObj[3])));
-				mwObj.setAzimuth_Degree(Double.parseDouble(emptyString(dataObj[4])));
+				mwObj.setSize_of_MW(dataObj[3] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[3])));
+				mwObj.setAzimuth_Degree(dataObj[4] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[4])));
 				MW.add(mwObj);
 			}
 			dto.setMW(MW);
@@ -2454,20 +2512,20 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				btsObj.setBand(emptyString(dataObj[3]));
 				btsObj.setManufacturer(emptyString(dataObj[4]));
 				btsObj.setMake_of_BTS(emptyString(dataObj[5]));
-				btsObj.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[6])));
-				btsObj.setWidth_Mtrs(Double.parseDouble(emptyString(dataObj[7])));
-				btsObj.setHeight_Mtrs(Double.parseDouble(emptyString(dataObj[8])));
-				btsObj.setBTS_Power_Rating_KW(Double.parseDouble(emptyString(dataObj[9])));
+				btsObj.setLength_Mtrs(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				btsObj.setWidth_Mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				btsObj.setHeight_Mtrs(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
+				btsObj.setBTS_Power_Rating_KW(dataObj[9] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[9])));
 				btsObj.setBTS_Location(emptyString(dataObj[10]));
 				btsObj.setBTS_Voltage(emptyString(dataObj[11]));
 				btsObj.setMain_Unit_in_case_of_TT_Split_Version(emptyString(dataObj[12]));
 				btsObj.setSpace_Occupied_in_Us_in_case_of_TT_Split_Version(emptyString(dataObj[13]));
 				btsObj.setLocation_Of_RRU(emptyString(dataObj[14]));
-				btsObj.setNo_Of_RRU_Units_in_case_of_TT_Split_Version(Double.parseDouble(emptyString(dataObj[15])));
-				btsObj.setCombined_wt_Of_RRU_Unit_in_case_of_TT_Split_Version(Double.parseDouble(emptyString(dataObj[16])));
-				btsObj.setAGL_of_RRU_unit_in_M(Double.parseDouble(emptyString(dataObj[17])));
-				btsObj.setWeight_Of_BTS_including_TMA_TMB_Kg(Double.parseDouble(emptyString(dataObj[18])));
-				btsObj.setBillable_Weight_in_Kg(Double.parseDouble(emptyString(dataObj[19])));
+				btsObj.setNo_Of_RRU_Units_in_case_of_TT_Split_Version(dataObj[15] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[15])));
+				btsObj.setCombined_wt_Of_RRU_Unit_in_case_of_TT_Split_Version(dataObj[16] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[16])));
+				btsObj.setAGL_of_RRU_unit_in_M(dataObj[17] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[17])));
+				btsObj.setWeight_Of_BTS_including_TMA_TMB_Kg(dataObj[18] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[18])));
+				btsObj.setBillable_Weight_in_Kg(dataObj[19] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[19])));
 				BTS.add(btsObj);
 			}
 			dto.setBTS(BTS);
@@ -2487,14 +2545,14 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				otherObj.setNode_Location(emptyString(dataObj[2]));
 				otherObj.setNode_Manufacturer(emptyString(dataObj[3]));
 				otherObj.setNode_Model(emptyString(dataObj[4]));
-				otherObj.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[5])));
-				otherObj.setBreadth_Mtrs(Double.parseDouble(emptyString(dataObj[6])));
-				otherObj.setHeight_Mtrs(Double.parseDouble(emptyString(dataObj[7])));
-				otherObj.setWeight_Kg(Double.parseDouble(emptyString(dataObj[8])));
+				otherObj.setLength_Mtrs(dataObj[5] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[5])));
+				otherObj.setBreadth_Mtrs(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				otherObj.setHeight_Mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				otherObj.setWeight_Kg(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
 				otherObj.setNode_Voltage(emptyString(dataObj[9]));
-				otherObj.setPower_Rating_in_Kw(Double.parseDouble(emptyString(dataObj[10])));
+				otherObj.setPower_Rating_in_Kw(dataObj[10] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[10])));
 				otherObj.setFullRack(emptyString(dataObj[11]));
-				otherObj.setTx_Rack_Space_Required_In_Us(Double.parseDouble(emptyString(dataObj[12])));
+				otherObj.setTx_Rack_Space_Required_In_Us(dataObj[12] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[12])));
 				otherObj.setRemarks(emptyString(dataObj[13]));
 				Other_Node.add(otherObj);
 			}
@@ -2514,10 +2572,10 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				bscRncObj.setBSC_RNC_Type(emptyString(dataObj[2]));
 				bscRncObj.setBSC_RNC_Manufacturer(emptyString(dataObj[3]));
 				bscRncObj.setBSC_RNC_Make(emptyString(dataObj[4]));
-				bscRncObj.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[5])));
-				bscRncObj.setBreadth_Mtrs(Double.parseDouble(emptyString(dataObj[6])));
-				bscRncObj.setHeight_AGL(Double.parseDouble(emptyString(dataObj[7])));
-				bscRncObj.setBSC_RNC_Power_Rating(Double.parseDouble(emptyString(dataObj[8])));
+				bscRncObj.setLength_Mtrs(dataObj[5] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[5])));
+				bscRncObj.setBreadth_Mtrs(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				bscRncObj.setHeight_AGL(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				bscRncObj.setBSC_RNC_Power_Rating(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
 				BSC_RNC_Cabinets.add(bscRncObj);
 			}
 			dto.setBSC_RNC_Cabinets(BSC_RNC_Cabinets);
@@ -2531,15 +2589,15 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				mcbDto = new McbDto();
 				mcbDto.setCustomer_Punched_Or_Planning("Planning");
 				//mcbDto.setFeasibility(emptyString(dataObj[0]));
-				mcbDto.setTotal_No_of_MCB_Required(Double.parseDouble(emptyString(dataObj[1])));
-				mcbDto.set_06A(Double.parseDouble(emptyString(dataObj[2])));
-				mcbDto.set_10A(Double.parseDouble(emptyString(dataObj[3])));
-				mcbDto.set_16A(Double.parseDouble(emptyString(dataObj[4])));
-				mcbDto.set_24A(Double.parseDouble(emptyString(dataObj[5])));
-				mcbDto.set_32A(Double.parseDouble(emptyString(dataObj[6])));
-				mcbDto.set_40A(Double.parseDouble(emptyString(dataObj[7])));
-				mcbDto.set_63A(Double.parseDouble(emptyString(dataObj[8])));
-				mcbDto.set_80A(Double.parseDouble(emptyString(dataObj[9])));
+				mcbDto.setTotal_No_of_MCB_Required(Double.parseDouble(emptyNumeric(dataObj[1])));
+				mcbDto.set_06A(dataObj[2] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[2])));
+				mcbDto.set_10A(dataObj[3] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[3])));
+				mcbDto.set_16A(dataObj[4] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[4])));
+				mcbDto.set_24A(dataObj[5] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[5])));
+				mcbDto.set_32A(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				mcbDto.set_40A(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				mcbDto.set_63A(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
+				mcbDto.set_80A(dataObj[9] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[9])));
 				MCB.add(mcbDto);
 			}
 			dto.setMCB(MCB);
@@ -2560,14 +2618,14 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				fiberObj.setNode_Location(emptyString(dataObj[2]));
 				fiberObj.setNode_Manufacturer(emptyString(dataObj[3]));
 				fiberObj.setNode_Model(emptyString(dataObj[4]));
-				fiberObj.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[5])));
-				fiberObj.setBreadth_Mtrs(Double.parseDouble(emptyString(dataObj[6])));
-				fiberObj.setHeight_mtrs(Double.parseDouble(emptyString(dataObj[7])));
-				fiberObj.setWeight(Double.parseDouble(emptyString(dataObj[8])));
+				fiberObj.setLength_Mtrs(dataObj[5] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[5])));
+				fiberObj.setBreadth_Mtrs(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				fiberObj.setHeight_mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				fiberObj.setWeight(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
 				fiberObj.setNode_Voltage(emptyString(dataObj[9]));
-				fiberObj.setPower_Rating_in_Kw(Double.parseDouble(emptyString(dataObj[10])));
+				fiberObj.setPower_Rating_in_Kw(dataObj[10] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[10])));
 				fiberObj.setFullRack(emptyString(dataObj[11]));
-				fiberObj.setTx_Rack_space_required_in_Us(Double.parseDouble(emptyString(dataObj[12])));
+				fiberObj.setTx_Rack_space_required_in_Us(dataObj[12] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[12])));
 				fiberObj.setIs_Right_of_Way_ROW_required_inside_the_TOCO_premises(emptyString(dataObj[13]));
 				fiberObj.setType_of_Fiber_Laying(emptyString(dataObj[14]));
 				fiberObj.setType_of_FMS(emptyString(dataObj[15]));
@@ -2618,9 +2676,9 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			for(Object [] dataObj : dataList){
 				Strategic_Conversion.setIs_it_Strategic(emptyString(dataObj[0]));
 				Strategic_Conversion.setShelter_Size(emptyString(dataObj[1]));
-				Strategic_Conversion.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[2])));
-				Strategic_Conversion.setBreadth_Mtrs(Double.parseDouble(emptyString(dataObj[3])));
-				Strategic_Conversion.setHeight_AGL_Mtrs(Double.parseDouble(emptyString(dataObj[4])));
+				Strategic_Conversion.setLength_Mtrs(dataObj[2] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[2])));
+				Strategic_Conversion.setBreadth_Mtrs(dataObj[3] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[3])));
+				Strategic_Conversion.setHeight_AGL_Mtrs(dataObj[4] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[4])));
 				Strategic_Conversion.setDG_Redundancy(emptyString(dataObj[5]));
 				Strategic_Conversion.setExtra_Battery_Bank_Requirement(emptyString(dataObj[6]));
 				Strategic_Conversion.setExtra_Battery_Back_Up(emptyString(dataObj[7]));
@@ -2672,18 +2730,6 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			if(!status){
 				String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"' where `SR_Number` = '"+srNumber+"'";
 				tviCommonDao.updateBulkdataValue(upSql);
-				
-				// Comment on 05-Oct-23
-				/*String upSql = "UPDATE `Airtel_SR` set `STATUS` = '"+currentStatus+"', `Additional_Charge` = null, "
-						+ "`Infra_Details` = null, `Site_Classification` = null, `Expected_Rent_to_Landlord` = null, "
-						+ "`Non_Refundable_Deposit` = null, `Estimated_Deployment_Time__in_days_` = null, "
-						+ "`Additional_Capex` = null, `Standard_Rates` = null, `Fiber_Charges` = null, "
-						+ "`Rental_Threshold` = null, `Excess_Rent_beyond_Threshold` = null, "
-						+ "`Tentative_Rental_Premium` = null, `Additional_Rent` = null, "
-						+ "`IPFee` = null, `Field_Operation_Charges` = null, `Security_Guard_Charges` = null, "
-						+ "`Mobilization_Charges` = null, `Erection_Charges` = null, `Battery_backup_Hrs` = null, "
-						+ "`Land_Lord_Charges_or_Rent_Charges` = null, "
-						+ "`Rejection_Remarks` = null where `SR_Number` = '"+srNumber+"'";*/
 			}
 			
 			Clob requestJson = new SerialClob(CommonFunction.printResponseJson(json).toCharArray());
@@ -2761,9 +2807,9 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				SPDetails_NN.setBattery_backup_Hrs(dataObj[35] == null ? "" : emptyString(dataObj[35]));
 				SPDetails_NN.setLand_Lord_Charges_or_Rent_Charges(dataObj[36] == null ? "" : emptyString(dataObj[36]));
 				SPDetails_NN.setWind_Speed(dataObj[37] == null ? "" : emptyString(dataObj[37]));
-				SPDetails_NN.setTowerHeight(dataObj[38] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[38])));
-				SPDetails_NN.setAgl(dataObj[39] == null ? 0 : Double.valueOf(emptyString(dataObj[39])));
-				SPDetails_NN.setDistance_from_P1_Lat_Long_in_meter(dataObj[40] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[40])));
+				SPDetails_NN.setTowerHeight(dataObj[38] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[38])));
+				SPDetails_NN.setAgl(dataObj[39] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[39])));
+				SPDetails_NN.setDistance_from_P1_Lat_Long_in_meter(dataObj[40] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[40])));
 				SPDetails_NN.setRejection_Remarks(dataObj[41] == null ? "" : emptyString(dataObj[41]));
 				circle = dataObj[42] == null ? "" : emptyString(dataObj[42]);
 				networkType = dataObj[43] == null ? "" : emptyString(dataObj[43]);
@@ -2802,12 +2848,12 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				radioAnt.setFeasibility(emptyString(dataObj[0]));
 				radioAnt.setRadioAntenna_i_WAN(emptyString(dataObj[1]));
 				radioAnt.setRadioAntenna_Type(emptyString(dataObj[2]));
-				radioAnt.setHeight_AGL_m(Double.parseDouble(emptyString(dataObj[3])));
-				radioAnt.setLength_m(Double.parseDouble(emptyString(dataObj[4])));
-				radioAnt.setWidth_m(Double.parseDouble(emptyString(dataObj[5])));
-				radioAnt.setDepth_m(Double.parseDouble(emptyString(dataObj[6])));
+				radioAnt.setHeight_AGL_m(dataObj[3] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[3])));
+				radioAnt.setLength_m(dataObj[4] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[4])));
+				radioAnt.setWidth_m(dataObj[5] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[5])));
+				radioAnt.setDepth_m(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
 				radioAnt.setNo_of_Ports(emptyString(dataObj[7]));
-				radioAnt.setAzimuth_Degree(Double.parseDouble(emptyString(dataObj[8])));
+				radioAnt.setAzimuth_Degree(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
 				String freq = emptyString(dataObj[9]);
 				String freqSplit [] = freq.split(",");
 				com.tvi.sharing.dto.BandFrequencyMHzDto bandFreq = new com.tvi.sharing.dto.BandFrequencyMHzDto();
@@ -2842,10 +2888,10 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			for(Object [] dataObj : dataList){
 				mwObj = new com.tvi.sharing.dto.MwAntennaDto();
 				mwObj.setFeasibility(emptyString(dataObj[0]));
-				mwObj.setHeight_in_Mtrs(Double.parseDouble(emptyString(dataObj[1])));
+				mwObj.setHeight_in_Mtrs(dataObj[1] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[1])));
 				mwObj.setMWAntenna_i_WAN(emptyString(dataObj[2]));
-				mwObj.setSize_of_MW(Double.parseDouble(emptyString(dataObj[3])));
-				mwObj.setAzimuth_Degree(Double.parseDouble(emptyString(dataObj[4])));
+				mwObj.setSize_of_MW(dataObj[3] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[3])));
+				mwObj.setAzimuth_Degree(dataObj[4] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[4])));
 				MW.add(mwObj);
 			}
 			dto.setMW(MW);
@@ -2869,20 +2915,20 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				btsObj.setBand(emptyString(dataObj[3]));
 				btsObj.setManufacturer(emptyString(dataObj[4]));
 				btsObj.setMake_of_BTS(emptyString(dataObj[5]));
-				btsObj.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[6])));
-				btsObj.setWidth_Mtrs(Double.parseDouble(emptyString(dataObj[7])));
-				btsObj.setHeight_Mtrs(Double.parseDouble(emptyString(dataObj[8])));
-				btsObj.setBTS_Power_Rating_KW(Double.parseDouble(emptyString(dataObj[9])));
+				btsObj.setLength_Mtrs(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				btsObj.setWidth_Mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				btsObj.setHeight_Mtrs(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
+				btsObj.setBTS_Power_Rating_KW(dataObj[9] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[9])));
 				btsObj.setBTS_Location(emptyString(dataObj[10]));
 				btsObj.setBTS_Voltage(emptyString(dataObj[11]));
 				btsObj.setMain_Unit_in_case_of_TT_Split_Version(emptyString(dataObj[12]));
-				btsObj.setSpace_Occupied_in_Us_in_case_of_TT_Split_Version(Double.parseDouble(emptyString(dataObj[13])));
+				btsObj.setSpace_Occupied_in_Us_in_case_of_TT_Split_Version(dataObj[13] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[13])));
 				btsObj.setLocation_Of_RRU(emptyString(dataObj[14]));
-				btsObj.setNo_Of_RRU_Units_in_case_of_TT_Split_Version(Double.parseDouble(emptyString(dataObj[15])));
-				btsObj.setCombined_wt_Of_RRU_Unit_in_case_of_TT_Split_Version(Double.parseDouble(emptyString(dataObj[16])));
-				btsObj.setAGL_of_RRU_unit_in_M(Double.parseDouble(emptyString(dataObj[17])));
-				btsObj.setWeight_Of_BTS_including_TMA_TMB_Kg(Double.parseDouble(emptyString(dataObj[18])));
-				btsObj.setBillable_Weight_in_Kg(Double.parseDouble(emptyString(dataObj[19])));
+				btsObj.setNo_Of_RRU_Units_in_case_of_TT_Split_Version(dataObj[15] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[15])));
+				btsObj.setCombined_wt_Of_RRU_Unit_in_case_of_TT_Split_Version(dataObj[16] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[16])));
+				btsObj.setAGL_of_RRU_unit_in_M(dataObj[17] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[17])));
+				btsObj.setWeight_Of_BTS_including_TMA_TMB_Kg(dataObj[18] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[18])));
+				btsObj.setBillable_Weight_in_Kg(dataObj[19] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[19])));
 				BTS.add(btsObj);
 			}
 			dto.setBTS(BTS);
@@ -2901,14 +2947,14 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				otherObj.setNode_Location(emptyString(dataObj[2]));
 				otherObj.setNode_Manufacturer(emptyString(dataObj[3]));
 				otherObj.setNode_Model(emptyString(dataObj[4]));
-				otherObj.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[5])));
-				otherObj.setBreadth_Mtrs(Double.parseDouble(emptyString(dataObj[6])));
-				otherObj.setHeight_Mtrs(Double.parseDouble(emptyString(dataObj[7])));
-				otherObj.setWeight_Kg(Double.parseDouble(emptyString(dataObj[8])));
+				otherObj.setLength_Mtrs(dataObj[5] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[5])));
+				otherObj.setBreadth_Mtrs(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				otherObj.setHeight_Mtrs(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				otherObj.setWeight_Kg(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
 				otherObj.setNode_Voltage(emptyString(dataObj[9]));
-				otherObj.setPower_Rating_in_Kw(Double.parseDouble(emptyString(dataObj[10])));
+				otherObj.setPower_Rating_in_Kw(dataObj[10] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[10])));
 				otherObj.setFullRack(emptyString(dataObj[11]));
-				otherObj.setTx_Rack_Space_Required_In_Us(Double.parseDouble(emptyString(dataObj[12])));
+				otherObj.setTx_Rack_Space_Required_In_Us(dataObj[12] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[12])));
 				otherObj.setRemarks(emptyString(dataObj[13]));
 				Other_Node.add(otherObj);
 			}
@@ -2927,10 +2973,10 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				bscRncObj.setBSC_RNC_Type(emptyString(dataObj[2]));
 				bscRncObj.setBSC_RNC_Manufacturer(emptyString(dataObj[3]));
 				bscRncObj.setBSC_RNC_Make(emptyString(dataObj[4]));
-				bscRncObj.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[5])));
-				bscRncObj.setBreadth_Mtrs(Double.parseDouble(emptyString(dataObj[6])));
-				bscRncObj.setHeight_AGL(Double.parseDouble(emptyString(dataObj[7])));
-				bscRncObj.setBSC_RNC_Power_Rating(Double.parseDouble(emptyString(dataObj[8])));
+				bscRncObj.setLength_Mtrs(dataObj[5] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[5])));
+				bscRncObj.setBreadth_Mtrs(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				bscRncObj.setHeight_AGL(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				bscRncObj.setBSC_RNC_Power_Rating(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
 				BSC_RNC_Cabinets.add(bscRncObj);
 			}
 			dto.setBSC_RNC_Cabinets(BSC_RNC_Cabinets);
@@ -2943,13 +2989,13 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			for(Object [] dataObj : dataList){
 				mcbDto = new com.tvi.sharing.dto.McbDto();
 				mcbDto.setFeasibility(emptyString(dataObj[0]));
-				mcbDto.setTotal_No_of_MCB_Required(Double.parseDouble(emptyString(dataObj[1])));
-				mcbDto.set_06A(Double.parseDouble(emptyString(dataObj[2])));
-				mcbDto.set_16A(Double.parseDouble(emptyString(dataObj[4])));
-				mcbDto.set_32A(Double.parseDouble(emptyString(dataObj[6])));
-				mcbDto.set_40A(Double.parseDouble(emptyString(dataObj[7])));
-				mcbDto.set_63A(Double.parseDouble(emptyString(dataObj[8])));
-				mcbDto.set_80A(Double.parseDouble(emptyString(dataObj[9])));
+				mcbDto.setTotal_No_of_MCB_Required(Double.parseDouble(emptyNumeric(dataObj[1])));
+				mcbDto.set_06A(dataObj[2] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[2])));
+				mcbDto.set_16A(dataObj[4] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[4])));
+				mcbDto.set_32A(dataObj[6] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[6])));
+				mcbDto.set_40A(dataObj[7] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[7])));
+				mcbDto.set_63A(dataObj[8] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[8])));
+				mcbDto.set_80A(dataObj[9] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[9])));
 				MCB.add(mcbDto);
 			}
 			dto.setMCB(MCB);
@@ -2969,14 +3015,14 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				fiberObj.setNode_Location(emptyString(dataObj[2]));
 				fiberObj.setNode_Manufacturer(emptyString(dataObj[3]));
 				fiberObj.setNode_Model(emptyString(dataObj[4]));
-				fiberObj.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[5])));
-				fiberObj.setBreadth_Mtrs(Double.parseDouble(emptyString(dataObj[6])));
-				fiberObj.setHeight_Mtrs(Double.parseDouble(emptyString(dataObj[7])));
-				fiberObj.setWeight_Kg(Double.parseDouble(emptyString(dataObj[8])));
+				fiberObj.setLength_Mtrs(Double.parseDouble(emptyNumeric(dataObj[5])));
+				fiberObj.setBreadth_Mtrs(Double.parseDouble(emptyNumeric(dataObj[6])));
+				fiberObj.setHeight_Mtrs(Double.parseDouble(emptyNumeric(dataObj[7])));
+				fiberObj.setWeight_Kg(Double.parseDouble(emptyNumeric(dataObj[8])));
 				fiberObj.setNode_Voltage(emptyString(dataObj[9]));
-				fiberObj.setPower_Rating_in_Kw(Double.parseDouble(emptyString(dataObj[10])));
+				fiberObj.setPower_Rating_in_Kw(Double.parseDouble(emptyNumeric(dataObj[10])));
 				fiberObj.setFullRack(emptyString(dataObj[11]));
-				fiberObj.setTx_Rack_space_required_in_Us(Double.parseDouble(emptyString(dataObj[12])));
+				fiberObj.setTx_Rack_space_required_in_Us(Double.parseDouble(emptyNumeric(dataObj[12])));
 				fiberObj.setIs_Right_of_Way_ROW_required_inside_the_TOCO_premises(emptyString(dataObj[13]));
 				fiberObj.setType_of_Fiber_Laying(emptyString(dataObj[14]));
 				fiberObj.setType_of_FMS(emptyString(dataObj[15]));
@@ -3026,9 +3072,9 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			for(Object [] dataObj : dataList){
 				Strategic_Conversion.setIs_it_Strategic(emptyString(dataObj[0]));
 				Strategic_Conversion.setShelter_Size(emptyString(dataObj[1]));
-				Strategic_Conversion.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[2])));
-				Strategic_Conversion.setBreadth_Mtrs(Double.parseDouble(emptyString(dataObj[3])));
-				Strategic_Conversion.setHeight_AGL_Mtrs(Double.parseDouble(emptyString(dataObj[4])));
+				Strategic_Conversion.setLength_Mtrs(Double.parseDouble(emptyNumeric(dataObj[2])));
+				Strategic_Conversion.setBreadth_Mtrs(Double.parseDouble(emptyNumeric(dataObj[3])));
+				Strategic_Conversion.setHeight_AGL_Mtrs(Double.parseDouble(emptyNumeric(dataObj[4])));
 				Strategic_Conversion.setDG_Redundancy(emptyString(dataObj[5]));
 				Strategic_Conversion.setExtra_Battery_Bank_Requirement(emptyString(dataObj[6]));
 				Strategic_Conversion.setExtra_Battery_Back_Up(emptyString(dataObj[7]));
@@ -3128,12 +3174,12 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				SPDetails_NN.setTOCO_Site_Id(emptyString(dataObj[8]));
 				SPDetails_NN.setDate_of_Proposal(dataObj[9] == null ? "" : emptyString(dataObj[9]));
 				SPDetails_NN.setPower_Rating(dataObj[10] == null ? "" : emptyString(dataObj[10]));
-				SPDetails_NN.setSite_Electrification_Distance(dataObj[11] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[11])));
+				SPDetails_NN.setSite_Electrification_Distance(dataObj[11] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[11])));
 				SPDetails_NN.setTentative_EB_Availibility(dataObj[12] == null ? "" : emptyString(dataObj[12]));
-				SPDetails_NN.setAdditional_Charge(dataObj[13] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[13])));
-				SPDetails_NN.setHead_Load_Charge(dataObj[14] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[14])));
-				SPDetails_NN.setElectrification_Cost(dataObj[15] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[15])));
-				SPDetails_NN.setElectrification_Line_Distance(dataObj[16] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[16])));
+				SPDetails_NN.setAdditional_Charge(dataObj[13] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[13])));
+				SPDetails_NN.setHead_Load_Charge(dataObj[14] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[14])));
+				SPDetails_NN.setElectrification_Cost(dataObj[15] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[15])));
+				SPDetails_NN.setElectrification_Line_Distance(dataObj[16] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[16])));
 				SPDetails_NN.setElectricity_Connection_HT_LT(dataObj[17] == null ? "" : emptyString(dataObj[17]));
 				SPDetails_NN.setInfra_Details(dataObj[18] == null ? "" : emptyString(dataObj[18]));
 				SPDetails_NN.setSite_Classification(dataObj[19] == null ? "" : emptyString(dataObj[19]));
@@ -3154,9 +3200,9 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				SPDetails_NN.setErection_Charges(dataObj[34] == null ? "" : emptyString(dataObj[34]));
 				SPDetails_NN.setLand_Lord_Charges_or_Rent_Charges(dataObj[35] == null ? "" : emptyString(dataObj[35]));
 				SPDetails_NN.setWind_Speed(dataObj[36] == null ? "" : emptyString(dataObj[36]));
-				SPDetails_NN.setTowerHeight(dataObj[37] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[37])));
-				SPDetails_NN.setAgl(dataObj[38] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[38])));
-				SPDetails_NN.setDistance_from_P1_Lat_Long_in_meter(dataObj[39] == null ? 0 : Double.valueOf(emplyNumeric(dataObj[39])));
+				SPDetails_NN.setTowerHeight(dataObj[37] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[37])));
+				SPDetails_NN.setAgl(dataObj[38] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[38])));
+				SPDetails_NN.setDistance_from_P1_Lat_Long_in_meter(dataObj[39] == null ? 0 : Double.parseDouble(emptyNumeric(dataObj[39])));
 				SPDetails_NN.setRejection_Remarks(dataObj[40] == null ? "" : emptyString(dataObj[40]));
 				SPDetails_NN.setDifficult(dataObj[41] == null ? "" :emptyString(dataObj[41]));
 				circle = emptyString(dataObj[42]);
@@ -3203,12 +3249,12 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				radioAnt.setFeasibility(emptyString(dataObj[0]));
 				radioAnt.setRadioAntenna_i_WAN(emptyString(dataObj[1]));
 				radioAnt.setRadioAntenna_Type(emptyString(dataObj[2]));
-				radioAnt.setHeight_AGL_m(Double.parseDouble(emptyString(dataObj[3])));
-				radioAnt.setLength_m(Double.parseDouble(emptyString(dataObj[4])));
-				radioAnt.setWidth_m(Double.parseDouble(emptyString(dataObj[5])));
-				radioAnt.setDepth_m(Double.parseDouble(emptyString(dataObj[6])));
+				radioAnt.setHeight_AGL_m(Double.parseDouble(emptyNumeric(dataObj[3])));
+				radioAnt.setLength_m(Double.parseDouble(emptyNumeric(dataObj[4])));
+				radioAnt.setWidth_m(Double.parseDouble(emptyNumeric(dataObj[5])));
+				radioAnt.setDepth_m(Double.parseDouble(emptyNumeric(dataObj[6])));
 				radioAnt.setNo_of_Ports(emptyString(dataObj[7]));
-				radioAnt.setAzimuth_Degree(Double.parseDouble(emptyString(dataObj[8])));
+				radioAnt.setAzimuth_Degree(Double.parseDouble(emptyNumeric(dataObj[8])));
 				String freq = emptyString(dataObj[9]);
 				String freqSplit [] = freq.split(",");
 				com.tvi.upgrade.dto.BandFrequencyMHzDto bandFreq = new com.tvi.upgrade.dto.BandFrequencyMHzDto();
@@ -3245,10 +3291,10 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			for(Object [] dataObj : dataList){
 				mwObj = new com.tvi.upgrade.dto.MwAntennaDto();
 				mwObj.setFeasibility(emptyString(dataObj[0]));
-				mwObj.setHeight_in_Mtrs(Double.parseDouble(emptyString(dataObj[1])));
+				mwObj.setHeight_in_Mtrs(Double.parseDouble(emptyNumeric(dataObj[1])));
 				mwObj.setMWAntenna_i_WAN(emptyString(dataObj[2]));
-				mwObj.setSize_of_MW(Double.parseDouble(emptyString(dataObj[3])));
-				mwObj.setAzimuth_Degree(Double.parseDouble(emptyString(dataObj[4])));
+				mwObj.setSize_of_MW(Double.parseDouble(emptyNumeric(dataObj[3])));
+				mwObj.setAzimuth_Degree(Double.parseDouble(emptyNumeric(dataObj[4])));
 				mwObj.setAction(emptyString(dataObj[5]));
 				mwObj.setCustomer_Punched_Or_Planning(emptyString(dataObj[6]));
 				mwObj.setSector_Details(emptyString(dataObj[7]));
@@ -3277,20 +3323,20 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				btsObj.setBand(emptyString(dataObj[3]));
 				btsObj.setManufacturer(emptyString(dataObj[4]));
 				btsObj.setMake_of_BTS(emptyString(dataObj[5]));
-				btsObj.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[6])));
-				btsObj.setWidth_Mtrs(Double.parseDouble(emptyString(dataObj[7])));
-				btsObj.setHeight_Mtrs(Double.parseDouble(emptyString(dataObj[8])));
-				btsObj.setBTS_Power_Rating_KW(Double.parseDouble(emptyString(dataObj[9])));
+				btsObj.setLength_Mtrs(Double.parseDouble(emptyNumeric(dataObj[6])));
+				btsObj.setWidth_Mtrs(Double.parseDouble(emptyNumeric(dataObj[7])));
+				btsObj.setHeight_Mtrs(Double.parseDouble(emptyNumeric(dataObj[8])));
+				btsObj.setBTS_Power_Rating_KW(Double.parseDouble(emptyNumeric(dataObj[9])));
 				btsObj.setBTS_Location(emptyString(dataObj[10]));
 				btsObj.setBTS_Voltage(emptyString(dataObj[11]));
 				btsObj.setMain_Unit_in_case_of_TT_Split_Version(emptyString(dataObj[12]));
 				btsObj.setSpace_Occupied_in_Us_in_case_of_TT_Split_Version(emptyString(dataObj[13]));
 				btsObj.setLocation_Of_RRU(emptyString(dataObj[14]));
-				btsObj.setNo_Of_RRU_Units_in_case_of_TT_Split_Version(Double.parseDouble(emptyString(dataObj[15])));
-				btsObj.setCombined_wt_Of_RRU_Unit_in_case_of_TT_Split_Version(Double.parseDouble(emptyString(dataObj[16])));
-				btsObj.setAGL_of_RRU_unit_in_M(Double.parseDouble(emptyString(dataObj[17])));
-				btsObj.setWeight_Of_BTS_including_TMA_TMB_Kg(Double.parseDouble(emptyString(dataObj[18])));
-				btsObj.setBillable_Weight_in_Kg(Double.parseDouble(emptyString(dataObj[19])));
+				btsObj.setNo_Of_RRU_Units_in_case_of_TT_Split_Version(Double.parseDouble(emptyNumeric(dataObj[15])));
+				btsObj.setCombined_wt_Of_RRU_Unit_in_case_of_TT_Split_Version(Double.parseDouble(emptyNumeric(dataObj[16])));
+				btsObj.setAGL_of_RRU_unit_in_M(Double.parseDouble(emptyNumeric(dataObj[17])));
+				btsObj.setWeight_Of_BTS_including_TMA_TMB_Kg(Double.parseDouble(emptyNumeric(dataObj[18])));
+				btsObj.setBillable_Weight_in_Kg(Double.parseDouble(emptyNumeric(dataObj[19])));
 				btsObj.setAction(emptyString(dataObj[20]));
 				btsObj.setCustomer_Punched_Or_Planning(emptyString(dataObj[21]));
 				BTS.add(btsObj);
@@ -3312,14 +3358,14 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				otherObj.setNode_Location(emptyString(dataObj[2]));
 				otherObj.setNode_Manufacturer(emptyString(dataObj[3]));
 				otherObj.setNode_Model(emptyString(dataObj[4]));
-				otherObj.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[5])));
-				otherObj.setBreadth_Mtrs(Double.parseDouble(emptyString(dataObj[6])));
-				otherObj.setHeight_Mtrs(Double.parseDouble(emptyString(dataObj[7])));
-				otherObj.setWeight_Kg(Double.parseDouble(emptyString(dataObj[8])));
+				otherObj.setLength_Mtrs(Double.parseDouble(emptyNumeric(dataObj[5])));
+				otherObj.setBreadth_Mtrs(Double.parseDouble(emptyNumeric(dataObj[6])));
+				otherObj.setHeight_Mtrs(Double.parseDouble(emptyNumeric(dataObj[7])));
+				otherObj.setWeight_Kg(Double.parseDouble(emptyNumeric(dataObj[8])));
 				otherObj.setNode_Voltage(emptyString(dataObj[9]));
-				otherObj.setPower_Rating_in_Kw(Double.parseDouble(emptyString(dataObj[10])));
+				otherObj.setPower_Rating_in_Kw(Double.parseDouble(emptyNumeric(dataObj[10])));
 				otherObj.setFullRack(emptyString(dataObj[11]));
-				otherObj.setTx_Rack_Space_Required_In_Us(Double.parseDouble(emptyString(dataObj[12])));
+				otherObj.setTx_Rack_Space_Required_In_Us(Double.parseDouble(emptyNumeric(dataObj[12])));
 				otherObj.setRemarks(emptyString(dataObj[13]));
 				otherObj.setAction(emptyString(dataObj[14]));
 				otherObj.setCustomer_Punched_Or_Planning(emptyString(dataObj[15]));
@@ -3341,10 +3387,10 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				bscRncObj.setBSC_RNC_Type(emptyString(dataObj[2]));
 				bscRncObj.setBSC_RNC_Manufacturer(emptyString(dataObj[3]));
 				bscRncObj.setBSC_RNC_Make(emptyString(dataObj[4]));
-				bscRncObj.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[5])));
-				bscRncObj.setBreadth_Mtrs(Double.parseDouble(emptyString(dataObj[6])));
-				bscRncObj.setHeight_AGL(Double.parseDouble(emptyString(dataObj[7])));
-				bscRncObj.setBSC_RNC_Power_Rating(Double.parseDouble(emptyString(dataObj[8])));
+				bscRncObj.setLength_Mtrs(Double.parseDouble(emptyNumeric(dataObj[5])));
+				bscRncObj.setBreadth_Mtrs(Double.parseDouble(emptyNumeric(dataObj[6])));
+				bscRncObj.setHeight_AGL(Double.parseDouble(emptyNumeric(dataObj[7])));
+				bscRncObj.setBSC_RNC_Power_Rating(Double.parseDouble(emptyNumeric(dataObj[8])));
 				bscRncObj.setAction(emptyString(dataObj[9]));
 				bscRncObj.setCustomer_Punched_Or_Planning(emptyString(dataObj[10]));
 				BSC_RNC_Cabinets.add(bscRncObj);
@@ -3359,15 +3405,15 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			for(Object [] dataObj : dataList){
 				mcbDto = new com.tvi.upgrade.dto.McbDto();
 				mcbDto.setFeasibility(emptyString(dataObj[0]));
-				mcbDto.setTotal_No_of_MCB_Required(Double.parseDouble(emptyString(dataObj[1])));
-				mcbDto.set_06A(Double.parseDouble(emptyString(dataObj[2])));
-				mcbDto.set_10A(Double.parseDouble(emptyString(dataObj[3])));
-				mcbDto.set_16A(Double.parseDouble(emptyString(dataObj[4])));
-				mcbDto.set_24A(Double.parseDouble(emptyString(dataObj[5])));
-				mcbDto.set_32A(Double.parseDouble(emptyString(dataObj[6])));
-				mcbDto.set_40A(Double.parseDouble(emptyString(dataObj[7])));
-				mcbDto.set_63A(Double.parseDouble(emptyString(dataObj[8])));
-				mcbDto.set_80A(Double.parseDouble(emptyString(dataObj[9])));
+				mcbDto.setTotal_No_of_MCB_Required(Double.parseDouble(emptyNumeric(dataObj[1])));
+				mcbDto.set_06A(Double.parseDouble(emptyNumeric(dataObj[2])));
+				mcbDto.set_10A(Double.parseDouble(emptyNumeric(dataObj[3])));
+				mcbDto.set_16A(Double.parseDouble(emptyNumeric(dataObj[4])));
+				mcbDto.set_24A(Double.parseDouble(emptyNumeric(dataObj[5])));
+				mcbDto.set_32A(Double.parseDouble(emptyNumeric(dataObj[6])));
+				mcbDto.set_40A(Double.parseDouble(emptyNumeric(dataObj[7])));
+				mcbDto.set_63A(Double.parseDouble(emptyNumeric(dataObj[8])));
+				mcbDto.set_80A(Double.parseDouble(emptyNumeric(dataObj[9])));
 				mcbDto.setCustomer_Punched_Or_Planning(emptyString(dataObj[10]));
 				MCB.add(mcbDto);
 			}
@@ -3389,14 +3435,14 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				fiberObj.setNode_Location(emptyString(dataObj[2]));
 				fiberObj.setNode_Manufacturer(emptyString(dataObj[3]));
 				fiberObj.setNode_Model(emptyString(dataObj[4]));
-				fiberObj.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[5])));
-				fiberObj.setBreadth_Mtrs(Double.parseDouble(emptyString(dataObj[6])));
-				fiberObj.setHeight_mtrs(Double.parseDouble(emptyString(dataObj[7])));
-				fiberObj.setWeight(Double.parseDouble(emptyString(dataObj[8])));
+				fiberObj.setLength_Mtrs(Double.parseDouble(emptyNumeric(dataObj[5])));
+				fiberObj.setBreadth_Mtrs(Double.parseDouble(emptyNumeric(dataObj[6])));
+				fiberObj.setHeight_mtrs(Double.parseDouble(emptyNumeric(dataObj[7])));
+				fiberObj.setWeight(Double.parseDouble(emptyNumeric(dataObj[8])));
 				fiberObj.setNode_Voltage(emptyString(dataObj[9]));
-				fiberObj.setPower_Rating_in_Kw(Double.parseDouble(emptyString(dataObj[10])));
+				fiberObj.setPower_Rating_in_Kw(Double.parseDouble(emptyNumeric(dataObj[10])));
 				fiberObj.setFullRack(emptyString(dataObj[11]));
-				fiberObj.setTx_Rack_space_required_in_Us(Double.parseDouble(emptyString(dataObj[12])));
+				fiberObj.setTx_Rack_space_required_in_Us(Double.parseDouble(emptyNumeric(dataObj[12])));
 				fiberObj.setIs_Right_of_Way_ROW_required_inside_the_TOCO_premises(emptyString(dataObj[13]));
 				fiberObj.setType_of_Fiber_Laying(emptyString(dataObj[14]));
 				fiberObj.setType_of_FMS(emptyString(dataObj[15]));
@@ -3470,9 +3516,9 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			for(Object [] dataObj : dataList){
 				Strategic_Conversion.setIs_it_Strategic(emptyString(dataObj[0]));
 				Strategic_Conversion.setShelter_Size(emptyString(dataObj[1]));
-				Strategic_Conversion.setLength_Mtrs(Double.parseDouble(emptyString(dataObj[2])));
-				Strategic_Conversion.setBreadth_Mtrs(Double.parseDouble(emptyString(dataObj[3])));
-				Strategic_Conversion.setHeight_AGL_Mtrs(Double.parseDouble(emptyString(dataObj[4])));
+				Strategic_Conversion.setLength_Mtrs(Double.parseDouble(emptyNumeric(dataObj[2])));
+				Strategic_Conversion.setBreadth_Mtrs(Double.parseDouble(emptyNumeric(dataObj[3])));
+				Strategic_Conversion.setHeight_AGL_Mtrs(Double.parseDouble(emptyNumeric(dataObj[4])));
 				Strategic_Conversion.setDG_Redundancy(emptyString(dataObj[5]));
 				Strategic_Conversion.setExtra_Battery_Bank_Requirement(emptyString(dataObj[6]));
 				Strategic_Conversion.setExtra_Battery_Back_Up(emptyString(dataObj[7]));
@@ -3645,169 +3691,6 @@ public class IntegrationDaoImpl implements IntegrationDao{
 		}
 		return response;
 	}
-	
-	/*private void prepareForSendMail(String srNumber,String spNumber,String soNumber, String circleName, 
-			String operatorName, String status, String currentTab, Map<String, String> errorsMap) {
-		try {
-			String fileName = "MyJsonFile.json";
-			String str = CommonFunction.readTextFile(fileName);
-			
-			JSONObject jsonObject = new JSONObject(str);
-			String mailFrom = jsonObject.getString("mailFrom");
-			String portalURL = jsonObject.getString("portalURL");
-			String ccMailId = jsonObject.getString("ccMailId");
-			String mobileNo = jsonObject.getString("mobileNo");
-			String regards = jsonObject.getString("regards");
-			String send_sms_4_SR = jsonObject.getString("send_sms_4_SR");
-			String send_sms_4_SP = jsonObject.getString("send_sms_4_SP");
-			String send_sms_4_SO = jsonObject.getString("send_sms_4_SO");
-			
-			boolean isSendSMS = false;
-			
-			String successMail = "";
-			String successSms = "";
-			
-			String nbStatus = "";
-			String statusSql = "SELECT `DESC_DETAILS`, `DESCRIPTION` FROM `NBS_STATUS`  where `STATUS` = '"+status+"' and `TAB_NAME` = '"+currentTab+"' ";
-			List<Object[]> statusResult = tviCommonDao.getNextLevelRole(statusSql);
-			int statusRowCount = statusResult.size();
-			if(statusRowCount == 1){
-				Object[] staObj = statusResult.get(0);
-				nbStatus = emptyString(staObj[0]);
-			}
-			
-			String sql = "SELECT `User_Role`, `Is_HO_User`, `Action_On_Role` FROM `Notification_Flow` where find_in_set('"+status+"',`Status`) <> 0 and `TAB_NAME` = '"+currentTab+"' ";
-			List<Object[]> result = tviCommonDao.getNextLevelRole(sql);
-			for(Object[] objj : result){
-				String userRole = emptyString(objj[0]);
-				String isHoUser = emptyString(objj[1]);
-				String actionOnRole = emptyString(objj[2]);
-				boolean onlyNotification = false;
-				if(actionOnRole.equalsIgnoreCase("N")){
-					onlyNotification = true;
-				}
-				
-				sql = "select `NAME`, `MOBILE`, `EMAIL_ID` from `EMPLOYEE_MASTER` where `ROLE` = '"+userRole+"' ";
-				if(userRole.equalsIgnoreCase("OPCO")){
-					sql += " and `ORGANIZATION` = '"+operatorName+"' ";
-				}
-				if(isHoUser.equalsIgnoreCase("N")){
-					sql += " and find_in_set('"+circleName+"',`CIRCLE_NAME`) <> 0 ";
-				}
-				sql += " and `IS_ACTIVE` = 'Y' ";
-				
-				List<Object[]> result1 = tviCommonDao.getNextLevelRole(sql);
-				if(result1.size() !=0){
-					for(Object[] obj : result1){
-						String name = obj[0] != null && emptyString(obj[0]).equalsIgnoreCase("") ? "" : emptyString(obj[0]);
-						String mobile = obj[1] != null && emptyString(obj[1]).equalsIgnoreCase("") ? "" : emptyString(obj[1]);
-						String email = obj[2] != null && emptyString(obj[2]).equalsIgnoreCase("") ? "" : emptyString(obj[2]);
-						
-						String subject = "";
-						StringBuilder msg = new StringBuilder();
-						StringBuilder sms = new StringBuilder();
-						msg.append("Dear "+name+",<br><br>");
-						sms.append("Dear "+name+", ");
-						if(onlyNotification){
-							msg.append("FYI<br><br>");
-							sms.append("FYI ");
-						}
-						//Y N N
-						if(!srNumber.equalsIgnoreCase("NA") && spNumber.equalsIgnoreCase("NA") && soNumber.equalsIgnoreCase("NA")){
-							subject = srNumber;
-							if(onlyNotification){
-								msg.append(srNumber+" is currently pending with "+userRole+".<br><br>");
-								sms.append(srNumber+" is currently pending with "+userRole+". ");
-							}
-							else{
-								msg.append(srNumber+" is pending for your action.<br><br>");
-								sms.append(srNumber+" is pending for your action. ");
-							}
-							msg.append("<b>SR Detail:</b><br>");
-							msg.append("SR No : "+srNumber+"<br>");
-							msg.append("Status : "+nbStatus+"<br>");
-							
-							sms.append("SR Detail: ");
-							sms.append("SR No : "+srNumber+" ");
-							sms.append("Status : "+nbStatus+" ");
-							
-							if(send_sms_4_SR.equalsIgnoreCase("Yes"))
-								isSendSMS = true;
-						}
-						// Y Y N
-						else if(!srNumber.equalsIgnoreCase("NA") && !spNumber.equalsIgnoreCase("NA") && soNumber.equalsIgnoreCase("NA")){
-							subject = spNumber;
-							if(onlyNotification){
-								msg.append(spNumber+" is currently pending with "+userRole+".<br><br>");
-								sms.append(spNumber+" is currently pending with "+userRole+". ");
-							}
-							else{
-								msg.append(spNumber+" is pending for your action.<br><br>");
-								sms.append(spNumber+" is pending for your action. ");
-							}	
-							msg.append("<b>SP Detail:</b><br>");
-							msg.append("SP No : "+spNumber+"<br>");
-							msg.append("Status : "+nbStatus+"<br>");
-							
-							sms.append("SP Detail: ");
-							sms.append("SP No : "+spNumber+" ");
-							sms.append("Status : "+nbStatus+" ");
-							
-							if(send_sms_4_SP.equalsIgnoreCase("Yes"))
-								isSendSMS = true;
-						}
-						// Y Y Y
-						else if(!srNumber.equalsIgnoreCase("NA") && !spNumber.equalsIgnoreCase("NA") && !soNumber.equalsIgnoreCase("NA")){
-							subject = soNumber;
-							if(onlyNotification){
-								msg.append(soNumber+" is currently pending with "+userRole+".<br><br>");
-								sms.append(soNumber+" is currently pending with "+userRole+". ");
-							}
-							else{
-								msg.append(soNumber+" is pending for your action.<br><br>");
-								sms.append(soNumber+" is pending for your action. ");
-							}
-							msg.append("<b>SO Detail:</b><br>");
-							msg.append("SO No : "+soNumber+"<br>");
-							msg.append("Status : "+nbStatus+"<br>");
-							
-							sms.append("SO Detail: ");
-							sms.append("SO No : "+soNumber+" ");
-							sms.append("Status : "+nbStatus+" ");
-							
-							if(send_sms_4_SO.equalsIgnoreCase("Yes"))
-								isSendSMS = true;
-						}
-						
-						msg.append("Operator Name : "+operatorName+"<br>");
-						msg.append("Circle : "+circleName+"<br><br>");
-						msg.append("Click here : <a href='"+portalURL+"' target='blank'>Customer Portal</a> <br><br>");
-						msg.append(regards);
-						
-						sms.append("Operator Name : "+operatorName+" ");
-						sms.append("Circle : "+circleName+" ");
-						sms.append("Click here : "+portalURL+" ");
-						sms.append("- CP Team");
-						
-						String mailStatus = SendMail.sendMail(mailFrom, email, ccMailId, "", subject+" Pending for action", msg.toString(), null);
-						if(mailStatus != null) successMail += email+",";
-							
-						if(isSendSMS){
-							int smsStatus = SendSMS.sendSms(sms.toString(), mobile+","+mobileNo);
-							if(smsStatus == 200) successSms += mobile+",";
-						}
-							
-					}
-				}
-			}
-			errorsMap.put("MAIL_STATUS_"+srNumber, successMail);
-			errorsMap.put("SMS_STATUS_"+srNumber, successSms);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			errorsMap.put("Error_In_prepareForSendMail", e.toString());
-		}	
-	}*/
 	
 	private void prepareForSendMail(String srNumber,String spNumber,String soNumber, String circleName, 
 			String operatorName, String status, String currentTab, Map<String, String> errorsMap) {
@@ -4144,7 +4027,7 @@ public class IntegrationDaoImpl implements IntegrationDao{
 		return value;
 	}
 	
-	private String emplyNumeric(Object obj){
+	private String emptyNumeric(Object obj){
 		String value = String.valueOf(obj);
 		if(value.equalsIgnoreCase("null"))
 			return "0";

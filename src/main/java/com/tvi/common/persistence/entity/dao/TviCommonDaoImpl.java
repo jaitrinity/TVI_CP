@@ -590,38 +590,6 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 		
 	}
 
-	/*@Override
-	public void insertHdrAndDetOfCOW(SaveNBSRequest jsonData) {
-		
-		String hdrTable = "INSERT INTO `NBS_MASTER_HDR` (`SR_NUMBER`, `SR_DATE`, `TAB_NAME`, `TVI_SITE_ID`, `AIRTEL_SITE_ID`, `AIRTEL_LOCATOR_ID` , `LATITUDE_1`, `LONGITUDE_1`, `LATITUDE_2`, `LONGITUDE_2`, `SITE_ADDRESS`, `CIRCLE_NAME`, `STATE`, `PINCODE`, `CLUTTER`, `DISTRICT`, `SITE_TYPE`,`TOWN_VILLAGE`, `TECHNOLOGY`, "
-				+ "`Cow_Type`, `Service_Order_Contract_Period`, `Height_of_highest_Antenna`, `Rated_Power_Consumption`, `Weight_on_Tower`, `Rack_space_for_BBU`, `Rack_space_for_MW_IDU`, `Power_Supply`, `WEIGHT_OF_ADDITIONAL_ANTENNA`, `Additional_BTS_floor_Space`, `RF_ANTENNA_MOUNT_HEIGHT`, `MW_ANTENNA_MOUNT_HEIGHT`, "
-				+ "`NO_OF_RF_ANTENNA`, `NO_OF_MICROWAVE`, `NO_OF_RRU`, `NO_OF_BBU`, `NO_OF_BTS`, `REMARK`, `STATUS`, `CREATE_BY`, `CREATE_DATE`) ";
-		
-		String hdrValue = "VALUES ('"+jsonData.getSrNumber()+"', CURRENT_TIMESTAMP, '"+jsonData.getCurrentTab()+"', '"+jsonData.getTviSiteId()+"', '"+jsonData.getAirtelSiteId()+"', '"+jsonData.getAirtelLocatorId()+"', "+jsonData.getLatitude1()+", "+jsonData.getLongitude1()+", "+jsonData.getLatitude2()+", "+jsonData.getLongitude2()+", '"+jsonData.getSiteAddress()+"', '"+jsonData.getCircleName()+"', '"+jsonData.getState()+"', '"+jsonData.getPincode()+"', '"+jsonData.getClutter()+"', '"+jsonData.getDistrict()+"', '"+jsonData.getSiteType()+"', '"+jsonData.getTownVillage()+"', '"+jsonData.getTechnology()+"', "
-				+ "'"+jsonData.getCowType()+"', '"+jsonData.getServiceContractPeriod()+"', "+jsonData.getHeightOfHighestAntenna()+", "+jsonData.getRatedPowerConsumption()+", "+jsonData.getTowerWeight()+", "+jsonData.getRackSpaceForBBU()+", "+jsonData.getRackSpaceForMW()+", '"+jsonData.getPowerSupply()+"', "+jsonData.getWeightOfAdditionalAntenna()+", "+jsonData.getAdditionBTSFloorSpace()+", "+jsonData.getRfAntennaMountHeight()+", '"+jsonData.getMwAntennaMountHeight()+"', "
-				+ ""+jsonData.getNoOfRFAntenna()+", "+jsonData.getNoOfMicrowave()+", "+jsonData.getNoOfRRU()+", "+jsonData.getNoOfBBU()+", "+jsonData.getNoOfBTS()+", '"+jsonData.getRemark()+"', 'NB01' , '"+jsonData.getLoginEmpId()+"' , CURRENT_TIMESTAMP) ";
-		getEm().createNativeQuery(hdrTable + hdrValue).executeUpdate();
-		
-		if(jsonData.getNoOfRFAntenna() != null && jsonData.getNoOfRFAntenna() != 0){
-			insertRfAntennaData(jsonData.getSrNumber(), jsonData.getRfAntennaList());
-		}
-		
-		if(jsonData.getNoOfMicrowave() != null && jsonData.getNoOfMicrowave() != 0){
-			insertMwData(jsonData.getSrNumber(), jsonData.getMicrowaveList());
-		}
-		
-		if(jsonData.getNoOfRRU() != null && jsonData.getNoOfRRU() != 0){
-			insertRruData(jsonData.getSrNumber(), jsonData.getRruList());
-		}
-		
-		if(jsonData.getNoOfBTS() != null && jsonData.getNoOfBTS() != 0){
-			insertBtsData(jsonData.getSrNumber(), jsonData.getBtsList());
-		}
-		
-		if(jsonData.getNoOfBBU() != null && jsonData.getNoOfBBU() != 0){
-			insertBbuData(jsonData.getSrNumber(), jsonData.getBbuList());
-		}
-	}*/
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -629,39 +597,6 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 		Query query = getEm().createNativeQuery(sql);
 		return query.getResultList();
 	}
-
-	/*@Override
-	public void insertHdrAndDetSharing(SaveNBSRequest jsonData) {
-		String hdrTable = "INSERT INTO `NBS_MASTER_HDR` (`SR_NUMBER`, `SR_DATE`, `TAB_NAME`, `TVI_SITE_ID`, `AIRTEL_SITE_ID`, `AIRTEL_LOCATOR_ID`, `LATITUDE_1`, `LONGITUDE_1`, `SITE_ADDRESS`, `CIRCLE_NAME`, `STATE`, `PINCODE`, `CLUTTER`, `DISTRICT`, `SITE_TYPE`, `TOWN_VILLAGE`, `TECHNOLOGY`, "
-				+ "`EB_AVAILABILITY`, `DG_AVAILABILITY`,`Total_Rated_Power_in_KW`, `NO_OF_RF_ANTENNA`, `NO_OF_MICROWAVE`, `NO_OF_BBU`, "
-				+ "`NO_OF_RRU`, `NO_OF_BTS`, `NO_OF_MCB`, `MW_RACK`, "
-				+ "`NO_OF_U_SPACE_REQUIRED`, `REMARK`, `STATUS`,`CREATE_BY`, `CREATE_DATE`) ";
-		String hdrValue = "VALUES ('"+jsonData.getSrNumber()+"', CURRENT_TIMESTAMP, '"+jsonData.getCurrentTab()+"', '"+jsonData.getTviSiteId()+"', '"+jsonData.getAirtelSiteId()+"', '"+jsonData.getAirtelLocatorId()+"', "+jsonData.getLatitude1()+", "+jsonData.getLongitude1()+", '"+jsonData.getSiteAddress()+"', '"+jsonData.getCircleName()+"', '"+jsonData.getState()+"', '"+jsonData.getPincode()+"', '"+jsonData.getClutter()+"', '"+jsonData.getDistrict()+"', '"+jsonData.getSiteType()+"', '"+jsonData.getTownVillage()+"', '"+jsonData.getTechnology()+"', "
-				+ "'"+jsonData.getEbAvailability()+"', '"+jsonData.getDgAvailability()+"', "+jsonData.getTotalRatedPower()+", "+jsonData.getNoOfRFAntenna()+", "+jsonData.getNoOfMicrowave()+", "+jsonData.getNoOfBBU()+", "
-				+ ""+jsonData.getNoOfRRU()+", "+jsonData.getNoOfBTS()+", "+jsonData.getNoOfMCB()+", '"+jsonData.getMwRack()+"', "
-				+ ""+jsonData.getNoOfUSpaceRequired()+", '"+jsonData.getRemark()+"', 'NB01', '"+jsonData.getLoginEmpId()+"' , CURRENT_TIMESTAMP) ";
-		getEm().createNativeQuery(hdrTable + hdrValue).executeUpdate();
-		
-		if(jsonData.getNoOfMicrowave() != null && jsonData.getNoOfMicrowave() != 0){
-			insertMwData(jsonData.getSrNumber(), jsonData.getMicrowaveList());
-		}
-		
-		if(jsonData.getNoOfRRU() != null && jsonData.getNoOfRRU() != 0){
-			insertRruData(jsonData.getSrNumber(), jsonData.getRruList());
-		}
-		
-		if(jsonData.getNoOfBTS() != null && jsonData.getNoOfBTS() != 0){
-			insertBtsData(jsonData.getSrNumber(), jsonData.getBtsList());
-		}
-		
-		if(jsonData.getNoOfBBU() != null && jsonData.getNoOfBBU() != 0){
-			insertBbuData(jsonData.getSrNumber(), jsonData.getBbuList());
-		}
-		
-		if(jsonData.getNoOfMCB() != null && jsonData.getNoOfMCB() != 0){
-			insertMcbData(jsonData.getSrNumber(), jsonData.getMcbList());
-		}
-	}*/
 
 	@Override
 	public void insertHdrAndDetODSCSharing(SaveNBSRequest jsonData) {
@@ -680,37 +615,6 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 		.executeUpdate();
 		
 	}
-
-	/*@Override
-	public void insertHdrAndDetODCSmartSplitSharing(SaveNBSRequest jsonData) {
-		String hdrTable = "INSERT INTO `NBS_MASTER_HDR` (`SR_NUMBER`, `SR_DATE`, `TAB_NAME`, `TVI_SITE_ID`, `AIRTEL_SITE_ID`, `AIRTEL_LOCATOR_ID`, `LATITUDE_1`, `LONGITUDE_1`, `SITE_ADDRESS`, `CIRCLE_NAME`, `STATE`, `PINCODE`, `CLUTTER`, `DISTRICT`, `SITE_TYPE`,`TOWN_VILLAGE`, `TECHNOLOGY`, "
-				+ "`Smart_Split_Type`, `Floor_Space_Of_OD_Cabinate`, `AC_Power_Load`, `EB_AVAILABILITY`, `FIBER_TERMINATION`, `Total_Power_Required`, "
-				+ "`REMARK`, `STATUS`, `CREATE_BY`, `CREATE_DATE`) ";
-		
-		String hdrValue = "VALUES ('"+jsonData.getSrNumber()+"', CURRENT_TIMESTAMP, '"+jsonData.getCurrentTab()+"', '"+jsonData.getTviSiteId()+"', '"+jsonData.getAirtelSiteId()+"', '"+jsonData.getAirtelLocatorId()+"', "+jsonData.getLatitude1()+", "+jsonData.getLongitude1()+", '"+jsonData.getSiteAddress()+"', '"+jsonData.getCircleName()+"', '"+jsonData.getState()+"', '"+jsonData.getPincode()+"', '"+jsonData.getClutter()+"', '"+jsonData.getDistrict()+"', '"+jsonData.getSiteType()+"', '"+jsonData.getTownVillage()+"', '"+jsonData.getTechnology()+"', "
-				+ "'"+jsonData.getSmartSplitType()+"', '"+jsonData.getFloorSpaceOfODCabinet()+"', '"+jsonData.getAcPowerLoad()+"', '"+jsonData.getEbAvailability()+"', '"+jsonData.getFiberTermination()+"', "+jsonData.getTotalPowerRequired()+", "
-				+ "'"+jsonData.getRemark()+"', 'NB01', '"+jsonData.getLoginEmpId()+"' , CURRENT_TIMESTAMP) ";
-		getEm().createNativeQuery(hdrTable + hdrValue).executeUpdate();
-		
-	}*/
-
-	/*@Override
-	public void insertHdrAndDetMassiveMIMOSharing(SaveNBSRequest jsonData) {
-		String hdrTable = "INSERT INTO `NBS_MASTER_HDR` (`SR_NUMBER`, `SR_DATE`, `TAB_NAME`, `TVI_SITE_ID`, `AIRTEL_SITE_ID`, `AIRTEL_LOCATOR_ID`, `LATITUDE_1`, `LONGITUDE_1`, `SITE_ADDRESS`, `CIRCLE_NAME`, `STATE`, `PINCODE`, `CLUTTER`, `DISTRICT`, `SITE_TYPE`,`TOWN_VILLAGE`, `TECHNOLOGY`, "
-				+ "`Existing_Airtel_configuration_before_MIMO`, `No_of_Massive_MIMO_Antenna`, `U_space_for_BBU`, `Power_requirement`, `Power_Threshold_in_case_of_MIMO_Expansion`, `Existing_LLR_of_TVI_Site`, `Additional_LLR_due_to_Addition_of_MIMO`, "
-				+ "`REMARK`, `STATUS`,`CREATE_BY`, `CREATE_DATE`) ";
-		
-		String hdrValue = "VALUES ('"+jsonData.getSrNumber()+"', CURRENT_TIMESTAMP, '"+jsonData.getCurrentTab()+"', '"+jsonData.getTviSiteId()+"', '"+jsonData.getAirtelSiteId()+"', '"+jsonData.getAirtelLocatorId()+"', "+jsonData.getLatitude1()+", "+jsonData.getLongitude1()+", '"+jsonData.getSiteAddress()+"', '"+jsonData.getCircleName()+"', '"+jsonData.getState()+"', '"+jsonData.getPincode()+"', '"+jsonData.getClutter()+"', '"+jsonData.getDistrict()+"', '"+jsonData.getSiteType()+"', '"+jsonData.getTownVillage()+"', '"+jsonData.getTechnology()+"', "
-				+ "'"+jsonData.getExistingAirtelConfigurationBeforeMIMO()+"', "+jsonData.getNoOfMassiveMIMOAntenna()+", "+jsonData.getuSpaceForBBU()+", "+jsonData.getPowerRequirement()+", "+jsonData.getPowerThresholdInCaseOfMIMOExpansion()+", '"+jsonData.getExistingLLROfTVISite()+"', "+jsonData.getAdditionalLLRDueToAdditionalMIMO()+", "
-				+ "'"+jsonData.getRemark()+"', 'NB01', '"+jsonData.getLoginEmpId()+"' , CURRENT_TIMESTAMP) ";
-		getEm().createNativeQuery(hdrTable + hdrValue).executeUpdate();
-		
-		if(jsonData.getNoOfMassiveMIMOAntenna() != null && jsonData.getNoOfMassiveMIMOAntenna() != 0){
-			insertMassiveMimoAntennaData(jsonData.getSrNumber(), jsonData.getMassiveMIMOAntennaList());
-		}
-		
-		
-	}*/
 
 	@Override
 	public int updateBulkdataValue(String updateTable) {
@@ -2378,22 +2282,18 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 		String srNumber = jsonData.getSR_No();
 		if(accRej.equalsIgnoreCase("Accept")){
 			if(srNumber.indexOf("NB_")>-1){
-//				st += ",`Status` = 'NB18', `RFI_ACCEPTED_DATE` = curdate()";
 				auditStatus = "NB18";
 				tabName = Constant.CreateNBS;
 			}
 			else if(srNumber.indexOf("HPSC_")>-1){
-//				st += ",`Status` = 'NB18', `RFI_ACCEPTED_DATE` = curdate()";
 				auditStatus = "NB18";
 				tabName = Constant.HPSC;
 			}
 			else if(srNumber.indexOf("SH_")>-1 || srNumber.indexOf("NT_")>-1){
-//				st += ",`Status` = 'NB09', `RFI_ACCEPTED_DATE` = curdate()";
 				auditStatus = "NB09";
 				tabName = Constant.New_Tenency;
 			}
 			else if(srNumber.indexOf("SU_")>-1 || srNumber.indexOf("UP_")>-1){
-//				st += ",`Status` = 'NB07', `RFI_ACCEPTED_DATE` = curdate()";
 				auditStatus = "NB07";
 				tabName = Constant.Site_Upgrade;
 			}
@@ -2401,22 +2301,18 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 		}
 		else{
 			if(srNumber.indexOf("NB_")>-1){
-//				auditStatus = "NB108";
 				auditStatus = "RNB15";
 				tabName = Constant.CreateNBS;
 			}
 			else if(srNumber.indexOf("HPSC_")>-1){
-//				auditStatus = "NB108";
 				auditStatus = "RNB15";
 				tabName = Constant.HPSC;
 			}
 			else if(srNumber.indexOf("SH_")>-1 || srNumber.indexOf("NT_")>-1){
-//				auditStatus = "NB108";
 				auditStatus = "RNB06";
 				tabName = Constant.New_Tenency;
 			}
 			else if(srNumber.indexOf("SU_")>-1 || srNumber.indexOf("UP_")>-1){
-//				auditStatus = "NB108";
 				auditStatus = "RNB04";
 				tabName = Constant.Site_Upgrade;
 			}
@@ -2494,25 +2390,21 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 		}
 		else{
 			if(srNumber.indexOf("NB_")>-1){
-//				st = ", `STATUS` = 'NB104', `SP_Number` = null, `TOCO_Site_Id` = null, `SP_DATE` = null";
 				st = ", `STATUS` = 'NB104'";
 				auditStatus = "NB104";
 				tabName = Constant.CreateNBS;
 			}
 			else if(srNumber.indexOf("HPSC_")>-1){
-//				st = ", `STATUS` = 'NB104', `SP_Number` = null, `TOCO_Site_Id` = null, `SP_DATE` = null";
 				st = ", `STATUS` = 'NB104'";
 				auditStatus = "NB104";
 				tabName = Constant.HPSC;
 			}
 			else if(srNumber.indexOf("SH_")>-1 || srNumber.indexOf("NT_")>-1){
-//				st = ", `STATUS` = 'NB104', `SP_Number` = null, `SP_DATE` = null";
 				st = ", `STATUS` = 'NB104'";
 				auditStatus = "NB104";
 				tabName = Constant.New_Tenency;
 			}
 			else if(srNumber.indexOf("SU_")>-1 || srNumber.indexOf("UP_")>-1){
-//				st = ", `STATUS` = 'NB104', `SP_Number` = null, `SP_DATE` = null";
 				st = ", `STATUS` = 'NB104'";
 				auditStatus = "NB104";
 				tabName = Constant.Site_Upgrade;
@@ -2531,27 +2423,6 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 				.setParameter(5, jsonData.getSR_No())
 				.executeUpdate();
 		if(exe != 0){
-			/*String delSql = "DELETE FROM `Airtel_BTS` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP';";
-			getEm().createNativeQuery(delSql).executeUpdate();
-			
-			delSql = "DELETE FROM `Airtel_Radio_Antenna` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP';";
-			getEm().createNativeQuery(delSql).executeUpdate();
-			
-			delSql = "DELETE FROM `Airtel_BSC_RNC_Cabinets` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP';";
-			getEm().createNativeQuery(delSql).executeUpdate();
-			
-			delSql = "DELETE FROM `Airtel_Fibre_Node` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP';";
-			getEm().createNativeQuery(delSql).executeUpdate();
-			
-			delSql = "DELETE FROM `Airtel_MCB` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP';";
-			getEm().createNativeQuery(delSql).executeUpdate();
-			
-			delSql = "DELETE FROM `Airtel_MW` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP';";
-			getEm().createNativeQuery(delSql).executeUpdate();
-			
-			delSql = "DELETE FROM `Airtel_Other_Node` where `SR_Number` = '"+srNumber+"' and `InsertType` = 'SP';";
-			getEm().createNativeQuery(delSql).executeUpdate();*/
-			
 			sql = "SELECT `SR_Number`, `SP_Number`, `SO_Number`, `CircleCode`  FROM `Airtel_SR` where `SR_Number` = '"+srNumber+"'";
 			List<Object[]> dataList = getAllTableData(sql);
 			if(dataList.size() !=0){
@@ -2710,85 +2581,5 @@ public class TviCommonDaoImpl extends GenericDaoImpl<Object> implements TviCommo
 				getEm().createNativeQuery(detTable + " VALUES " + detValue).executeUpdate();
 		}
 	}
-	
-	/*@Override
-	public boolean soSubmit(SoSubmitDto jsonData) {
-		String spNumber = jsonData.getSP_Ref_No();
-		String tabName = "NA";
-		String accRej = jsonData.getAccept_Reject();
-		String st = "";
-		String auditStatus = "";
-		if(spNumber.indexOf("NB_")>-1){
-			tabName = Constant.CreateNBS;
-			if(accRej.equalsIgnoreCase("Accept")){
-				st = ", `STATUS` = 'NB10'";
-				auditStatus = "NB10";
-			}
-		}
-		else if(spNumber.indexOf("HPSC_")>-1){
-			tabName = Constant.HPSC;
-			if(accRej.equalsIgnoreCase("Accept")){
-				st = ", `STATUS` = 'NB10'";
-				auditStatus = "NB10";
-			}
-		}
-		else if(spNumber.indexOf("SH_")>-1 || spNumber.indexOf("NT_")>-1){
-			tabName = Constant.New_Tenency;
-			if(accRej.equalsIgnoreCase("Accept")){
-				st = ", `STATUS` = 'NB05'";
-				auditStatus = "NB05";
-			}
-		}
-		else if(spNumber.indexOf("SU_")>-1 || spNumber.indexOf("UP_")>-1){
-			tabName = Constant.Site_Upgrade;
-			if(accRej.equalsIgnoreCase("Accept")){
-				st = ", `STATUS` = 'NB03'";
-				auditStatus = "NB03";
-			}
-		}
-		
-		String sql = "UPDATE `Airtel_SR` set `Financial_Site_Id` = ?, `Expected_monthly_Rent_Approved` = ?, "
-				+ "`CAPEX_Amount_Approved` = ?, `OPEX_Amount_Approved` = ?, `Tentative_Billing_Amount_Approved` = ?,"
-				+ "`Target_Date` = ?, `Date` = ?, `SO_Number` = ?, `Tenure_In_Years` = ?, `SO_DATE` = curdate(), "
-				+ "`SO_Accept_Reject` = ? "+st+" "
-				+ "where `SP_Number` = ?";
-		int exe = getEm().createNativeQuery(sql)
-				.setParameter(1, jsonData.getFinancial_Site_Id())
-				.setParameter(2, jsonData.getExpected_monthly_Rent_Approved())
-				.setParameter(3, jsonData.getCAPEX_Amount_Approved())
-				.setParameter(4, jsonData.getOPEX_Amount_Approved())
-				.setParameter(5, jsonData.getTentative_Billing_Amount_Approved())
-				.setParameter(6, jsonData.getTarget_Date())
-				.setParameter(7, jsonData.getDate())
-				.setParameter(8, jsonData.getCustomer_SO_No())
-				.setParameter(9, jsonData.getTenure_In_Years())
-				.setParameter(10, accRej)
-				.setParameter(11, spNumber)
-				.executeUpdate();
-		if(exe != 0){
-			sql = "SELECT `SR_Number`, `SO_Number`, `CircleCode`  FROM `Airtel_SR` where `SP_Number` = '"+spNumber+"'";
-			List<Object[]> dataList = getAllTableData(sql);
-			if(dataList.size() !=0){
-				Object [] obj = dataList.get(0);
-				String srNumber =  String.valueOf(obj[0]);
-				String soNumber = String.valueOf(obj[1]);
-				String circleCode =  String.valueOf(obj[2]);
-				String insAudSql = "INSERT INTO `Airtel_SR_Audit`(`SR_NUMBER`, `EMP_ID`, `ACTION`, `REMARK`) "
-						+ "VALUES "
-						+ "('"+srNumber+"', '"+circleCode+"', '"+auditStatus+"', 'SO "+accRej+"')";
-				int i = getEm().createNativeQuery(insAudSql).executeUpdate();
-				if(i != 0){
-					jsonData.setSrNumber(srNumber);
-					jsonData.setSpNumber(spNumber);
-					jsonData.setSoNumber(soNumber);
-					jsonData.setStatus(auditStatus);
-					jsonData.setCircle(circleCode);
-					jsonData.setTabName(tabName);
-				}
-			}
-			return true;
-		}
-		return false;
-	}*/
 
 }

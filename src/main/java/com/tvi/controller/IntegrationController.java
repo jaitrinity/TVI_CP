@@ -70,49 +70,6 @@ public class IntegrationController {
 		return intService.getNoOfList();
 	}
 	
-	/*@RequestMapping(value ="/raiseSr",method = RequestMethod.POST)
-	public Response<SrResponse> raiseSr(@RequestBody SrRequestJsonDto srDto){
-		Response<SrResponse> response = null;
-		try {
-			response = intService.raiseSr(srDto);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		Gson gsonObj = new Gson();
-		String json = gsonObj.toJson(srDto);
-		saveResponseInTable(json, response, "raiseSr");
-		return response;
-	}
-	
-	@RequestMapping(value ="/raiseSharingSr",method = RequestMethod.POST)
-	public Response<SrResponse> raiseSharingSr(@RequestBody SharingSrRequestJsonDto srDto){
-		Response<SrResponse> response = null;
-		try {
-			response = intService.raiseSharingSr(srDto);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		Gson gsonObj = new Gson();
-		String json = gsonObj.toJson(srDto);
-		saveResponseInTable(json, response, "raiseSharingSr");
-		return response;
-	}
-	
-	@RequestMapping(value ="/raiseUpgradeSr",method = RequestMethod.POST)
-	public Response<SrResponse> raiseUpgradeSr(@RequestBody UpgradeSrRequestJsonDto srDto){
-		Response<SrResponse> response = null;
-		try {
-			response = intService.raiseUpgradeSr(srDto);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		Gson gsonObj = new Gson();
-		String json = gsonObj.toJson(srDto);
-		saveResponseInTable(json, response, "raiseUpgradeSr");
-		return response;
-	}
-	*/
-	
 	@RequestMapping(value ="/raiseSr",method = RequestMethod.POST)
 	public Response<SrResponse> raiseSr(@RequestBody String requestJson){
 		Response<SrResponse> response = null;
