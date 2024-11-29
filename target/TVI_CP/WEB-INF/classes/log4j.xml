@@ -5,7 +5,7 @@
 		<param name="append" value="false" />
 		<param name="file" value="/opt/tomcat/logs/TVI_CP.log" />
 		<!-- <param name="file" value="/opt/tomcat/logs/TVI_CP_WS.log" /> -->
-		<!-- <param name="file" value="/opt/tomcat/logs/TVI_CPv.log" /> -->
+		<!-- <param name="file" value="/opt/tomcat/logs/TVI_CPv1.log" /> -->
 		<param name="maxFileSize" value="10MB" />
 		<param name="maxBackupIndex" value="500" />
 		<layout class="org.apache.log4j.PatternLayout">

@@ -141,18 +141,38 @@ public class IntegrationDaoImpl implements IntegrationDao{
 		SrResponse sr = null;
 		try {
 			SrRequestJsonDto srRequestJson = srDto;
-			// checking customer site id is available in Airtel SR table...
+			
+			// checking Ref_Number_TVIPL is available in `Airtel_SR` table...
+			// ========= Start ========
+			String refNumberTvipl = srDto.getRef_Number_TVIPL();
+			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Ref_Number_TVIPL` = '"+refNumberTvipl+"'"
+					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108','NB110')";
+			List<Object[]> alreadySrDataList = tviCommonDao.getAllTableData(sql);
+			boolean isExist = alreadySrDataList.size() != 0 ? true : false;
+			if(isExist){
+//				Object[] staObj = alreadySrDataList.get(0);
+				response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
+				response.setResponseDesc("SR already exist on Ref_Number_TVIPL("+refNumberTvipl+")");
+//				response.setSrNumber(emptyString(staObj[0]));
+//				response.setUniqueRequestId(emptyString(staObj[1]));
+//				response.setSrDate(emptyString(staObj[2]));
+				return response;
+			}
+			// ========= End ========
+			
 			SiteDetailDto siteDetail = srRequestJson.getSite_Detail();
+			// checking Customer_Site_Id is available in `Airtel_SR` table...
+			// ========= Start ========
 			String customerSiteId = siteDetail.getCustomer_Site_Id().trim();
 			if(customerSiteId == null || customerSiteId.equalsIgnoreCase("")){
 				response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
 				response.setResponseDesc("Customer_Site_Id can't be blank");
 				return response;
 			}
-			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Customer_Site_Id` like '%"+customerSiteId+"%'"
+			sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `TAB_NAME` in ('CreateNBS','HPSC') and `Customer_Site_Id` like '%"+customerSiteId+"%'"
 					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108','NB110')";
-			List<Object[]> alreadySrDataList = tviCommonDao.getAllTableData(sql);
-			boolean isExist = alreadySrDataList.size() != 0 ? true : false;
+			alreadySrDataList = tviCommonDao.getAllTableData(sql);
+			isExist = alreadySrDataList.size() != 0 ? true : false;
 			if(isExist){
 				Object[] staObj = alreadySrDataList.get(0);
 				response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
@@ -162,6 +182,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				response.setSrDate(emptyString(staObj[2]));
 				return response;
 			}
+			// ========= End ========
+			
 			Date d = new Date();
 			String tabName = Constant.CreateNBS;
 			String srNumber = "NB_SR"+d.getTime();
@@ -208,7 +230,27 @@ public class IntegrationDaoImpl implements IntegrationDao{
 		SrResponse sr = null;
 		try {
 			SharingSrRequestJsonDto srRequestJson = srDto;
-			// checking customer site id is available in Airtel SR table...
+			
+			// checking Ref_Number_TVIPL is available in `Airtel_SR` table...
+			// ========= Start ========
+			String refNumberTvipl = srDto.getRef_Number_TVIPL();
+			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Ref_Number_TVIPL` = '"+refNumberTvipl+"'"
+					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108','NB110')";
+			List<Object[]> alreadySrDataList = tviCommonDao.getAllTableData(sql);
+			boolean isExist = alreadySrDataList.size() != 0 ? true : false;
+			if(isExist){
+//				Object[] staObj = alreadySrDataList.get(0);
+				response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
+				response.setResponseDesc("SR already exist on Ref_Number_TVIPL("+refNumberTvipl+")");
+//				response.setSrNumber(emptyString(staObj[0]));
+//				response.setUniqueRequestId(emptyString(staObj[1]));
+//				response.setSrDate(emptyString(staObj[2]));
+				return response;
+			}
+			// ========= End ========
+			
+			// checking `Customer_Site_Id` is available in `Airtel_SR` table...
+			// ========= Start ========
 			com.tvi.sharing.dto.SiteDetailDto siteDetail = srRequestJson.getSite_Detail();
 			String customerSiteId = siteDetail.getCustomer_Site_Id().trim();
 			if(customerSiteId == null || customerSiteId.equalsIgnoreCase("")){
@@ -216,10 +258,10 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				response.setResponseDesc("Customer_Site_Id can't be blank");
 				return response;
 			}
-			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Customer_Site_Id` like '%"+customerSiteId+"%'"
+			sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `TAB_NAME` = 'New_Tenency' and `Customer_Site_Id` like '%"+customerSiteId+"%'"
 					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108','NB110')";
-			List<Object[]> alreadySrDataList = tviCommonDao.getAllTableData(sql);
-			boolean isExist = alreadySrDataList.size() != 0 ? true : false;
+			alreadySrDataList = tviCommonDao.getAllTableData(sql);
+			isExist = alreadySrDataList.size() != 0 ? true : false;
 			if(isExist){
 				Object[] staObj = alreadySrDataList.get(0);
 				response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
@@ -229,7 +271,10 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				response.setSrDate(emptyString(staObj[2]));
 				return response;
 			}
+			// ========= End ========
+			
 			// checking TOCO_SITE_ID is available in Site_Master... 
+			// ========= Start ========
 			String tocoSiteId = siteDetail.getTOCO_Site_Id();
 			if(tocoSiteId == null || tocoSiteId.equalsIgnoreCase("")){
 				response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
@@ -262,6 +307,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				response.setResponseDesc("Airtel already available in TOCO Site Id("+tocoSiteId+") ");
 				return response;
 			}
+			// ========= End ========
+			
 			Date d = new Date();
 			String srNumber = "NT_SR"+d.getTime();
 			sr = new SrResponse();
@@ -302,7 +349,27 @@ public class IntegrationDaoImpl implements IntegrationDao{
 		SrResponse sr = null;
 		try {
 			UpgradeSrRequestJsonDto srRequestJson = srDto;
+			
+			// checking Ref_Number_TVIPL is available in `Airtel_SR` table...
+			// ========= Start ========
+			String refNumberTvipl = srDto.getRef_Number_TVIPL();
+			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Ref_Number_TVIPL` = '"+refNumberTvipl+"'"
+					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108','NB110')";
+			List<Object[]> alreadySrDataList = tviCommonDao.getAllTableData(sql);
+			boolean isExist = alreadySrDataList.size() != 0 ? true : false;
+			if(isExist){
+//				Object[] staObj = alreadySrDataList.get(0);
+				response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
+				response.setResponseDesc("SR already exist on Ref_Number_TVIPL("+refNumberTvipl+")");
+//				response.setSrNumber(emptyString(staObj[0]));
+//				response.setUniqueRequestId(emptyString(staObj[1]));
+//				response.setSrDate(emptyString(staObj[2]));
+				return response;
+			}
+			// ========= End ========
+			
 			// checking TOCO_SITE_ID is available in Site_Master...
+			// ========= Start ========
 			com.tvi.upgrade.dto.GlobalDto global = srRequestJson.getGlobal();
 			String tocoSiteId = global.getTOCO_Site_ID();
 			if(tocoSiteId == null || tocoSiteId.equalsIgnoreCase("")){
@@ -310,10 +377,10 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				response.setResponseDesc("TOCO_Site_Id can't be blank");
 				return response;
 			}
-			String sql = "SELECT `Circle`, `Site Name`, `Latitude`, `Longitude`, `Address`, `TypeofSite`, `Airtel` FROM `Site_Master` "
+			sql = "SELECT `Circle`, `Site Name`, `Latitude`, `Longitude`, `Address`, `TypeofSite`, `Airtel` FROM `Site_Master` "
 					+ "where `TVISiteID` = '"+tocoSiteId+"' and (`Is_Deleted` is null or `Is_Deleted` = 'N')";
 			List<Object[]> dataList = tviCommonDao.getAllTableData(sql);
-			boolean isExist = dataList.size() == 0 ? false : true;
+			isExist = dataList.size() == 0 ? false : true;
 			if(!isExist){
 				response.setResponseCode(ReturnsCode.NO_RECORD_FOUND_CODE);
 				response.setResponseDesc("TOCO Site Id("+tocoSiteId+") not found in Site Master");
@@ -336,6 +403,8 @@ public class IntegrationDaoImpl implements IntegrationDao{
 				response.setResponseDesc("Airtel not available in TOCO Site Id("+tocoSiteId+") ");
 				return response;
 			}
+			// ========= End ========
+			
 			Date d = new Date();
 			String srNumber = "SU_SR"+d.getTime();
 			sr = new SrResponse();
