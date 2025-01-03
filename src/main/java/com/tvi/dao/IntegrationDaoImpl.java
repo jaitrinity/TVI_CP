@@ -145,17 +145,17 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			// checking Ref_Number_TVIPL is available in `Airtel_SR` table...
 			// ========= Start ========
 			String refNumberTvipl = srDto.getRef_Number_TVIPL();
-			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Ref_Number_TVIPL` = '"+refNumberTvipl+"'"
+			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `TAB_NAME` in ('CreateNBS','HPSC') and `Ref_Number_TVIPL` = '"+refNumberTvipl+"'"
 					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108','NB110')";
 			List<Object[]> alreadySrDataList = tviCommonDao.getAllTableData(sql);
 			boolean isExist = alreadySrDataList.size() != 0 ? true : false;
 			if(isExist){
-//				Object[] staObj = alreadySrDataList.get(0);
+				Object[] staObj = alreadySrDataList.get(0);
 				response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
 				response.setResponseDesc("SR already exist on Ref_Number_TVIPL("+refNumberTvipl+")");
-//				response.setSrNumber(emptyString(staObj[0]));
-//				response.setUniqueRequestId(emptyString(staObj[1]));
-//				response.setSrDate(emptyString(staObj[2]));
+				response.setSrNumber(emptyString(staObj[0]));
+				response.setUniqueRequestId(emptyString(staObj[1]));
+				response.setSrDate(emptyString(staObj[2]));
 				return response;
 			}
 			// ========= End ========
@@ -234,17 +234,17 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			// checking Ref_Number_TVIPL is available in `Airtel_SR` table...
 			// ========= Start ========
 			String refNumberTvipl = srDto.getRef_Number_TVIPL();
-			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Ref_Number_TVIPL` = '"+refNumberTvipl+"'"
+			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `TAB_NAME` = 'New_Tenency' and `Ref_Number_TVIPL` = '"+refNumberTvipl+"'"
 					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108','NB110')";
 			List<Object[]> alreadySrDataList = tviCommonDao.getAllTableData(sql);
 			boolean isExist = alreadySrDataList.size() != 0 ? true : false;
 			if(isExist){
-//				Object[] staObj = alreadySrDataList.get(0);
+				Object[] staObj = alreadySrDataList.get(0);
 				response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
 				response.setResponseDesc("SR already exist on Ref_Number_TVIPL("+refNumberTvipl+")");
-//				response.setSrNumber(emptyString(staObj[0]));
-//				response.setUniqueRequestId(emptyString(staObj[1]));
-//				response.setSrDate(emptyString(staObj[2]));
+				response.setSrNumber(emptyString(staObj[0]));
+				response.setUniqueRequestId(emptyString(staObj[1]));
+				response.setSrDate(emptyString(staObj[2]));
 				return response;
 			}
 			// ========= End ========
@@ -353,17 +353,17 @@ public class IntegrationDaoImpl implements IntegrationDao{
 			// checking Ref_Number_TVIPL is available in `Airtel_SR` table...
 			// ========= Start ========
 			String refNumberTvipl = srDto.getRef_Number_TVIPL();
-			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `Ref_Number_TVIPL` = '"+refNumberTvipl+"'"
+			String sql = "SELECT `SR_Number`, `UniqueRequestId`, `SR_DATE` FROM `Airtel_SR` where `TAB_NAME` = 'Site_Upgrade' and `Ref_Number_TVIPL` = '"+refNumberTvipl+"'"
 					+ " and `STATUS` not in ('NB97','NB98','NB99','NB100','NB101','NB102','NB104','NB105','NB106','NB107','NB108','NB110')";
 			List<Object[]> alreadySrDataList = tviCommonDao.getAllTableData(sql);
 			boolean isExist = alreadySrDataList.size() != 0 ? true : false;
 			if(isExist){
-//				Object[] staObj = alreadySrDataList.get(0);
+				Object[] staObj = alreadySrDataList.get(0);
 				response.setResponseCode(ReturnsCode.ALREADY_EXIST_CODE);
 				response.setResponseDesc("SR already exist on Ref_Number_TVIPL("+refNumberTvipl+")");
-//				response.setSrNumber(emptyString(staObj[0]));
-//				response.setUniqueRequestId(emptyString(staObj[1]));
-//				response.setSrDate(emptyString(staObj[2]));
+				response.setSrNumber(emptyString(staObj[0]));
+				response.setUniqueRequestId(emptyString(staObj[1]));
+				response.setSrDate(emptyString(staObj[2]));
 				return response;
 			}
 			// ========= End ========
